@@ -11,6 +11,10 @@ Robustness rules learned the hard way:
   when the script runs and stamps `js` on <html>.
 * Nothing external is referenced (sheets inline as data URIs); no fixed
   pixel widths that could force horizontal overflow in narrow viewers.
+
+Sheets are hitbox-native (renderScale 1.0): the animated canvases and the
+stress field draw them 1:1 — exactly what the game's 640x360 buffer shows —
+zoomed 2x for the eye via CSS.
 """
 
 from __future__ import annotations
@@ -18,10 +22,17 @@ from __future__ import annotations
 import base64
 import json
 
+_SECTIONS = (
+    ("player", "core", "Player — core weapon frames (subordinate, Law 2)"),
+    ("player", "extended", "Player — future frame candidates"),
+    ("hostile", "core", "Hostile — Phase A roster (one shared signature, §2.6 / Law 3)"),
+    ("hostile", "extended", "Hostile — extended vocabulary (one lane per role-grammar pressure)"),
+)
+
 
 def build_preview(manifest: dict, pngs: dict) -> str:
     metas = {}
-    cards = {"player": [], "hostile": []}
+    sections = {(role, tier): [] for role, tier, _ in _SECTIONS}
     for key in sorted(manifest["families"]):
         fam = manifest["families"][key]
         uri = "data:image/png;base64," + base64.b64encode(pngs[fam["image"]]).decode("ascii")
@@ -29,33 +40,39 @@ def build_preview(manifest: dict, pngs: dict) -> str:
             "role": fam["role"],
             "frames": fam["frames"],
             "rateTicks": fam["rateTicks"],
-            "renderScale": fam["renderScale"],
+            "cellPx": fam["cellPx"],
         }
-        cards[fam["role"]].append(_card(key, fam, uri))
+        sections[(fam["role"], fam["tier"])].append(_card(key, fam, uri))
     payload = json.dumps(
-        {"cell": manifest["cell"], "tps": manifest["ticksPerSecond"], "families": metas},
-        sort_keys=True,
+        {"tps": manifest["ticksPerSecond"], "families": metas}, sort_keys=True
     )
+    body = []
+    for role, tier, title in _SECTIONS:
+        cards = sections[(role, tier)]
+        if not cards:
+            continue
+        body.append(f"<h2>{title}</h2>\n<div class=\"cards\">\n" + "\n".join(cards) + "\n</div>")
     html = _TEMPLATE
     html = html.replace("__PAYLOAD__", payload)
-    html = html.replace("__PLAYER_CARDS__", "\n".join(cards["player"]))
-    html = html.replace("__HOSTILE_CARDS__", "\n".join(cards["hostile"]))
+    html = html.replace("__SECTIONS__", "\n".join(body))
     return html
 
 
 def _card(key: str, fam: dict, uri: str) -> str:
     consumers = ", ".join(fam["consumers"])
     plural = "s" if fam["frames"] != 1 else ""
+    cell = fam["cellPx"]
     return f"""<div class="card">
   <h3>{key}<span class="tag {fam['role']}">{fam['role']}</span></h3>
   <div class="meta">{fam['silhouette']} &middot; {fam['frames']}f @ {fam['rateTicks']}t
-    &middot; hitbox r {fam['hitboxRadiusTiles']}t &middot; scale {fam['renderScale']}<br>{consumers}</div>
+    &middot; hitbox r {fam['hitboxRadiusTiles']}t &middot; cell {cell}px<br>{consumers}</div>
   <img class="sheet" id="img-{key}" src="{uri}" alt="{key} sheet"
-       width="{fam['frames'] * 64}" height="64" draggable="false">
-  <div class="lbl">sheet &middot; {fam['frames']} frame{plural} at 2x</div>
+       width="{fam['frames'] * cell * 2}" height="{cell * 2}" draggable="false">
+  <div class="lbl">sheet &middot; {fam['frames']} frame{plural} &middot; in-game size at 2x zoom</div>
   <div class="row anim">
-    <div><canvas id="a-{key}" width="48" height="48"></canvas><div class="lbl">authored 4x</div></div>
-    <div><canvas id="g-{key}" width="48" height="48"></canvas><div class="lbl">in-game 2x</div></div>
+    <div><canvas id="c-{key}" width="{cell}" height="{cell}"
+         style="width:{cell * 2}px;height:{cell * 2}px"></canvas>
+    <div class="lbl">animated</div></div>
   </div>
 </div>"""
 
@@ -76,7 +93,7 @@ _TEMPLATE = """<!doctype html>
   .toggles label { margin-right:18px; user-select:none; cursor:pointer; }
   .cards { display:flex; flex-wrap:wrap; gap:12px; }
   .card { background:#1c1f22; border:1px solid #2a2e32; border-radius:6px;
-          padding:10px 12px; width:240px; max-width:100%; box-sizing:border-box; }
+          padding:10px 12px; width:250px; max-width:100%; box-sizing:border-box; }
   .card h3 { margin:0 0 2px; font-size:14px; }
   .tag { font-size:11px; padding:1px 6px; border-radius:3px; margin-left:6px; }
   .hostile { background:#4a1d1d; color:#ffb3a0; }
@@ -85,7 +102,6 @@ _TEMPLATE = """<!doctype html>
   img.sheet, canvas { image-rendering:pixelated; background:#101214;
                       border-radius:4px; display:block; }
   img.sheet { max-width:100%; height:auto; }
-  canvas { width:96px; height:96px; }
   .row { display:flex; gap:10px; align-items:flex-end; margin-top:8px; }
   .lbl { font-size:11px; color:#6f7880; }
   #stresswrap canvas { width:100%; max-width:1152px; height:auto;
@@ -102,28 +118,22 @@ _TEMPLATE = """<!doctype html>
 </head>
 <body>
 <h1>Projectile Forge — pack preview</h1>
-<p class="note">Quiet dark floor, Nearest scaling. Each card shows the raw
-sheet strip (frames left to right, shapes point +X — the game rotates shots
-to their travel direction). <b>in-game</b> canvases apply the manifest render
-scale: hostile visuals cover the collision circle; player cross-axis is
-capped at the hitbox. Toggle grayscale to audit the shape-first rule — every
-family must stay identifiable with color gone.
+<p class="note">Quiet dark floor, Nearest scaling. Sheets are
+<b>hitbox-native</b>: every family is baked at its final on-screen size
+(hostile: the inscribed circle equals the collision circle; player:
+cross-axis capped at the hitbox) and the game draws them 1:1 — what you see
+at 2x zoom here is exactly two screen pixels per game pixel. Shapes point +X;
+the game rotates shots to their travel direction. Toggle grayscale to audit
+the shape-first rule — every family must stay identifiable with color gone.
 <span class="jsnote">(Static view: animation and the stress field appear when
-scripts are allowed; the sheet strips above are the full content.)</span></p>
+scripts are allowed; the sheet strips are the full content.)</span></p>
 <div class="toggles">
 <input type="checkbox" id="grayToggle">
 <label for="grayToggle">grayscale (colorblind / Law 3 audit)</label>
 <input type="checkbox" id="pauseToggle" hidden>
 <label for="pauseToggle" id="freezelbl">freeze animation</label>
 <div id="wrap">
-<h2>Player families (subordinate — Law 2)</h2>
-<div class="cards">
-__PLAYER_CARDS__
-</div>
-<h2>Hostile families (one shared signature — §2.6, Law 3)</h2>
-<div class="cards">
-__HOSTILE_CARDS__
-</div>
+__SECTIONS__
 <div id="stresswrap">
 <h2>Stress field (Law 2 at density)</h2>
 <p class="note">Deterministic (no RNG): player spam underneath, hostile fire
@@ -136,7 +146,7 @@ over it — hostile must stay legible above all of it.</p>
 document.documentElement.classList.add('js');
 document.getElementById('pauseToggle').hidden = false;
 const PACK = __PAYLOAD__;
-const CELL = PACK.cell, TPS = PACK.tps;
+const TPS = PACK.tps;
 const pause = document.getElementById('pauseToggle');
 const fams = [];
 for (const [key, fam] of Object.entries(PACK.families)) {
@@ -147,20 +157,18 @@ for (const [key, fam] of Object.entries(PACK.families)) {
 function frameOf(fam, tick) {
   return Math.floor(tick / fam.rateTicks) % fam.frames;
 }
-function drawShot(ctx, fam, tick, x, y, angle, scale) {
+function drawShot(ctx, fam, tick, x, y, angle) {
+  const s = fam.cellPx;
   ctx.save();
   ctx.translate(x, y);
   ctx.rotate(angle);
-  const s = CELL * scale;
   ctx.imageSmoothingEnabled = false;
-  ctx.drawImage(fam.img, frameOf(fam, tick) * CELL, 0, CELL, CELL,
-                -s / 2, -s / 2, s, s);
+  ctx.drawImage(fam.img, frameOf(fam, tick) * s, 0, s, s, -s / 2, -s / 2, s, s);
   ctx.restore();
 }
 const cards = fams.map(fam => ({
   fam,
-  authored: document.getElementById('a-' + fam.key).getContext('2d'),
-  ingame: document.getElementById('g-' + fam.key).getContext('2d'),
+  ctx: document.getElementById('c-' + fam.key).getContext('2d'),
   lastFrame: -1,
 }));
 function drawCards(tick) {
@@ -168,10 +176,9 @@ function drawCards(tick) {
     const f = frameOf(c.fam, tick);
     if (c.lastFrame === f) continue;
     c.lastFrame = f;
-    c.authored.clearRect(0, 0, 48, 48);
-    c.ingame.clearRect(0, 0, 48, 48);
-    drawShot(c.authored, c.fam, tick, 24, 24, 0, 1);
-    drawShot(c.ingame, c.fam, tick, 24, 24, 0, c.fam.renderScale);
+    const s = c.fam.cellPx;
+    c.ctx.clearRect(0, 0, s, s);
+    drawShot(c.ctx, c.fam, tick, s / 2, s / 2, 0);
   }
 }
 // Deterministic stress field: phases are pure functions of the emitter index
@@ -185,8 +192,7 @@ function stressField(ctx, tick) {
     const a = (i * 2.399963) % (Math.PI * 2);
     const r = 30 + ((i * 53) % 130) + ((tick * 2.2 + i * 17) % 160);
     drawShot(ctx, fam, tick + i * 3,
-             320 + Math.cos(a) * r, 180 + Math.sin(a) * r * 0.56,
-             a, fam.renderScale);
+             320 + Math.cos(a) * r, 180 + Math.sin(a) * r * 0.56, a);
   }
   for (let i = 0; i < 56; i++) {
     const fam = hostiles[i % hostiles.length];
@@ -194,7 +200,7 @@ function stressField(ctx, tick) {
     const r = 40 + ((i * 37) % 110) + 34 * Math.sin(tick * 0.02 + i);
     drawShot(ctx, fam, tick + i * 5,
              320 + Math.cos(a) * r, 180 + Math.sin(a) * r * 0.56,
-             a + Math.PI / 2, fam.renderScale);
+             a + Math.PI / 2);
   }
 }
 const stress = document.getElementById('stress').getContext('2d');

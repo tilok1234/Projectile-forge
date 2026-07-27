@@ -8,36 +8,36 @@ is a record, not a vibe.
 Rows (mapped to the binding constraints):
 * alpha-binary        — crisp Nearest-friendly pixels; alpha strictly {0,255}
 * hostile-signature   — §2.6: every hostile silhouette edge wears the bright
-                        rim; NO friendly edge is bright (Law 2/3)
+                        rim; NO player edge is bright (Law 2/3)
 * silhouette-distinct — Law 3 / CORE-50: declared silhouette classes unique,
-                        AND measured pairwise mask overlap (IoU at in-game
-                        relative scale) under threshold for every pair
-                        involving a hostile family — shape first, color never
-* hitbox-cover        — Law 8: hostile inscribed radius supports the
-                        scale = hitbox/inscribed rule without exceeding the
-                        oversize cap (visuals may not dwarf their hitboxes)
+                        AND measured pairwise mask overlap (IoU at final
+                        on-screen size — sheets are hitbox-native) under
+                        threshold for every pair involving a hostile family
+* hitbox-cover        — Law 8: baked equality — the centered inscribed
+                        opaque circle matches the collision circle on every
+                        hostile family; player cross-axis never exceeds its
+                        hitbox
 * photosensitivity    — 9-row acceptance, row nine: per-frame mean-luminance
                         delta and loop flash rate capped (≤ 3 Hz at 60 t/s)
 * roster-coverage     — every shot-firing §3.3/§3.4/§3.5 roster entry has a
-                        family; catalog drift fails loudly
+                        core family; catalog drift fails loudly
 """
 
 from __future__ import annotations
 
-from .families import CELL, TICKS_PER_SECOND
+from .families import TICKS_PER_SECOND
 
 # Hostile families must separate from EACH OTHER by naked silhouette — shape
 # alone, color and treatment gone (Law 3 / CORE-50 strict reading).
 IOU_MAX_HOSTILE_PAIR = 0.55
-# Hostile-vs-friendly discrimination is carried by the shared signature (§2.6
-# — that is what it is FOR; the M6 Law 3 acceptance row tests it with the
-# treatment applied at stress density). The silhouette check on these pairs
-# is only a guard rail against near-identical outlines.
+# Hostile-vs-player discrimination is carried by the shared signature (§2.6);
+# the silhouette check on these pairs is only a guard rail.
 IOU_MAX_CROSS_ROLE_PAIR = 0.75
 RIM_LUM_MIN = 0.80          # hostile boundary pixels must be at least this bright
 RIM_FRACTION_MIN = 0.85     # ...for at least this fraction of the boundary
 FRIENDLY_EDGE_LUM_MAX = 0.75
-OVERSIZE_CAP = 2.2          # hostile render scale (hitbox/inscribed) ceiling
+COVER_TOL = 0.3             # px: baked inscribed-vs-hitbox equality tolerance
+COVER_SLACK = 2.5           # px: inscribed may exceed the hitbox by at most this (bake pad + raster)
 LUM_DELTA_MAX = 0.02        # mean-luminance step between consecutive frames
 FLASH_HZ_MAX = 3.0
 
@@ -52,15 +52,15 @@ def _lum(r: int, g: int, b: int) -> float:
     return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255.0
 
 
-def _frames_of(sheet: tuple, frames: int) -> list:
+def _frames_of(sheet: tuple, frames: int, cell: int) -> list:
     """Split a single-row sheet (w, h, rgba) into per-frame pixel lists."""
     w, h, px = sheet
     out = []
     for i in range(frames):
         frame = []
-        for y in range(CELL):
-            for x in range(CELL):
-                j = (y * w + i * CELL + x) * 4
+        for y in range(cell):
+            for x in range(cell):
+                j = (y * w + i * cell + x) * 4
                 frame.append((px[j], px[j + 1], px[j + 2], px[j + 3]))
         out.append(frame)
     return out
@@ -70,48 +70,47 @@ def _mask(frame: list) -> list:
     return [1 if p[3] == 255 else 0 for p in frame]
 
 
-def _boundary(mask: list) -> list:
+def _boundary(mask: list, cell: int) -> list:
     out = []
-    for y in range(CELL):
-        for x in range(CELL):
-            if not mask[y * CELL + x]:
+    for y in range(cell):
+        for x in range(cell):
+            if not mask[y * cell + x]:
                 continue
             for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
                 nx, ny = x + dx, y + dy
-                if nx < 0 or ny < 0 or nx >= CELL or ny >= CELL or not mask[ny * CELL + nx]:
-                    out.append(y * CELL + x)
+                if nx < 0 or ny < 0 or nx >= cell or ny >= cell or not mask[ny * cell + nx]:
+                    out.append(y * cell + x)
                     break
     return out
 
 
-def _mean_lum(frame: list) -> float:
+def _mean_lum(frame: list, cell: int) -> float:
     total = 0.0
     for r, g, b, a in frame:
         if a:
             total += _lum(r, g, b)
-    return total / (CELL * CELL)
+    return total / (cell * cell)
 
 
-def _iou_at_scale(mask_a: list, scale_a: float, mask_b: list, scale_b: float) -> float:
-    """Overlap of two silhouettes rendered at their in-game scales, both
-    centered — the canonical Law 3 comparison pose."""
-    grid = 96
+def _iou_native(mask_a: list, cell_a: int, mask_b: list, cell_b: int) -> float:
+    """Overlap of two hitbox-native silhouettes, both centered — the
+    canonical Law 3 comparison pose (shapes point +X)."""
+    grid = 116
     half = grid / 2.0
-    c = CELL / 2.0
     inter = union = 0
     for gy in range(grid):
         for gx in range(grid):
             sx = gx + 0.5 - half
             sy = gy + 0.5 - half
             a = b = 0
-            ax = int(sx / scale_a + c)
-            ay = int(sy / scale_a + c)
-            if 0 <= ax < CELL and 0 <= ay < CELL:
-                a = mask_a[ay * CELL + ax]
-            bx = int(sx / scale_b + c)
-            by = int(sy / scale_b + c)
-            if 0 <= bx < CELL and 0 <= by < CELL:
-                b = mask_b[by * CELL + bx]
+            ax = int(sx + cell_a / 2.0)
+            ay = int(sy + cell_a / 2.0)
+            if 0 <= ax < cell_a and 0 <= ay < cell_a:
+                a = mask_a[ay * cell_a + ax]
+            bx = int(sx + cell_b / 2.0)
+            by = int(sy + cell_b / 2.0)
+            if 0 <= bx < cell_b and 0 <= by < cell_b:
+                b = mask_b[by * cell_b + bx]
             if a and b:
                 inter += 1
             if a or b:
@@ -127,10 +126,11 @@ def validate_pack(manifest: dict, sheets: dict) -> dict:
     fams = manifest["families"]
     data = {}
     for key, fam in fams.items():
-        sheet = sheets[fam["image"]]
-        frames = _frames_of(sheet, fam["frames"])
+        cell = fam["cellPx"]
+        frames = _frames_of(sheets[fam["image"]], fam["frames"], cell)
         data[key] = {
             "meta": fam,
+            "cell": cell,
             "frames": frames,
             "masks": [_mask(f) for f in frames],
         }
@@ -154,7 +154,7 @@ def validate_pack(manifest: dict, sheets: dict) -> dict:
         role = d["meta"]["role"]
         worst = 1.0 if role == "hostile" else 0.0
         for frame, mask in zip(d["frames"], d["masks"]):
-            edge = _boundary(mask)
+            edge = _boundary(mask, d["cell"])
             lums = [_lum(*frame[i][:3]) for i in edge]
             if role == "hostile":
                 frac = sum(1 for v in lums if v >= RIM_LUM_MIN) / len(lums)
@@ -190,9 +190,9 @@ def validate_pack(manifest: dict, sheets: dict) -> dict:
             if role_a != "hostile" and role_b != "hostile":
                 continue
             limit = IOU_MAX_HOSTILE_PAIR if role_a == role_b else IOU_MAX_CROSS_ROLE_PAIR
-            v = _iou_at_scale(
-                data[ka]["masks"][0], data[ka]["meta"]["renderScale"],
-                data[kb]["masks"][0], data[kb]["meta"]["renderScale"],
+            v = _iou_native(
+                data[ka]["masks"][0], data[ka]["cell"],
+                data[kb]["masks"][0], data[kb]["cell"],
             )
             pairs[f"{ka}~{kb}"] = {"iou": round(v, 3), "limit": limit}
             iou_ok = iou_ok and v < limit
@@ -206,19 +206,20 @@ def validate_pack(manifest: dict, sheets: dict) -> dict:
     cover = {}
     ok = True
     for key, d in data.items():
-        if d["meta"]["role"] != "hostile":
-            continue
+        hb = d["meta"]["hitboxRadiusPx"]
         inscribed = d["meta"]["inscribedRadiusPx"]
-        scale = d["meta"]["renderScale"]
-        good = inscribed > 0 and scale <= OVERSIZE_CAP
-        cover[key] = {
-            "inscribedRadiusPx": inscribed,
-            "hitboxRadiusPx": d["meta"]["hitboxRadiusPx"],
-            "renderScale": scale, "pass": good,
-        }
+        if d["meta"]["role"] == "hostile":
+            good = (inscribed >= hb - COVER_TOL) and (inscribed <= hb + COVER_SLACK)
+            cover[key] = {"inscribedRadiusPx": inscribed, "hitboxRadiusPx": hb,
+                          "pass": good}
+        else:
+            cross = d["meta"]["crossHalfExtentPx"]
+            good = cross <= hb + 0.6
+            cover[key] = {"crossHalfExtentPx": cross, "hitboxRadiusPx": hb,
+                          "pass": good}
         ok = ok and good
     rows.append({
-        "check": "hitbox-cover", "law": "Law 8",
+        "check": "hitbox-cover", "law": "Law 8 (hitbox-native bake)",
         "pass": ok, "detail": cover,
     })
 
@@ -226,7 +227,7 @@ def validate_pack(manifest: dict, sheets: dict) -> dict:
     photo = {}
     ok = True
     for key, d in data.items():
-        lums = [_mean_lum(f) for f in d["frames"]]
+        lums = [_mean_lum(f, d["cell"]) for f in d["frames"]]
         n = len(lums)
         delta = 0.0
         if n > 1:

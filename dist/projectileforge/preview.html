@@ -14,7 +14,7 @@
   .toggles label { margin-right:18px; user-select:none; cursor:pointer; }
   .cards { display:flex; flex-wrap:wrap; gap:12px; }
   .card { background:#1c1f22; border:1px solid #2a2e32; border-radius:6px;
-          padding:10px 12px; width:240px; max-width:100%; box-sizing:border-box; }
+          padding:10px 12px; width:250px; max-width:100%; box-sizing:border-box; }
   .card h3 { margin:0 0 2px; font-size:14px; }
   .tag { font-size:11px; padding:1px 6px; border-radius:3px; margin-left:6px; }
   .hostile { background:#4a1d1d; color:#ffb3a0; }
@@ -23,7 +23,6 @@
   img.sheet, canvas { image-rendering:pixelated; background:#101214;
                       border-radius:4px; display:block; }
   img.sheet { max-width:100%; height:auto; }
-  canvas { width:96px; height:96px; }
   .row { display:flex; gap:10px; align-items:flex-end; margin-top:8px; }
   .lbl { font-size:11px; color:#6f7880; }
   #stresswrap canvas { width:100%; max-width:1152px; height:auto;
@@ -40,119 +39,290 @@
 </head>
 <body>
 <h1>Projectile Forge — pack preview</h1>
-<p class="note">Quiet dark floor, Nearest scaling. Each card shows the raw
-sheet strip (frames left to right, shapes point +X — the game rotates shots
-to their travel direction). <b>in-game</b> canvases apply the manifest render
-scale: hostile visuals cover the collision circle; player cross-axis is
-capped at the hitbox. Toggle grayscale to audit the shape-first rule — every
-family must stay identifiable with color gone.
+<p class="note">Quiet dark floor, Nearest scaling. Sheets are
+<b>hitbox-native</b>: every family is baked at its final on-screen size
+(hostile: the inscribed circle equals the collision circle; player:
+cross-axis capped at the hitbox) and the game draws them 1:1 — what you see
+at 2x zoom here is exactly two screen pixels per game pixel. Shapes point +X;
+the game rotates shots to their travel direction. Toggle grayscale to audit
+the shape-first rule — every family must stay identifiable with color gone.
 <span class="jsnote">(Static view: animation and the stress field appear when
-scripts are allowed; the sheet strips above are the full content.)</span></p>
+scripts are allowed; the sheet strips are the full content.)</span></p>
 <div class="toggles">
 <input type="checkbox" id="grayToggle">
 <label for="grayToggle">grayscale (colorblind / Law 3 audit)</label>
 <input type="checkbox" id="pauseToggle" hidden>
 <label for="pauseToggle" id="freezelbl">freeze animation</label>
 <div id="wrap">
-<h2>Player families (subordinate — Law 2)</h2>
+<h2>Player — core weapon frames (subordinate, Law 2)</h2>
 <div class="cards">
 <div class="card">
   <h3>longbolt<span class="tag player">player</span></h3>
   <div class="meta">bolt &middot; 1f @ 10t
-    &middot; hitbox r 0.15t &middot; scale 1.0<br>weapon:longbolt</div>
-  <img class="sheet" id="img-longbolt" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAQElEQVR42mNgGAWjYBSMglEwCgYrsPNP+E9NPGAWk+QQmKK89gU0wQQdMeAOGPAoGBSJcBSMglEwCkbBKKA3AAAklioAQkXTwgAAAABJRU5ErkJggg==" alt="longbolt sheet"
-       width="64" height="64" draggable="false">
-  <div class="lbl">sheet &middot; 1 frame at 2x</div>
+    &middot; hitbox r 0.15t &middot; cell 30px<br>weapon:longbolt</div>
+  <img class="sheet" id="img-longbolt" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAAPElEQVR42mNgGAWjYBSMglEwJIGdf8J/amK6W0iUA0ASee0LaIqxWj5gFg9YUA9o4hoFo2AUjIJRMCgBAOW0LKBr3sp2AAAAAElFTkSuQmCC" alt="longbolt sheet"
+       width="60" height="60" draggable="false">
+  <div class="lbl">sheet &middot; 1 frame &middot; in-game size at 2x zoom</div>
   <div class="row anim">
-    <div><canvas id="a-longbolt" width="48" height="48"></canvas><div class="lbl">authored 4x</div></div>
-    <div><canvas id="g-longbolt" width="48" height="48"></canvas><div class="lbl">in-game 2x</div></div>
+    <div><canvas id="c-longbolt" width="30" height="30"
+         style="width:60px;height:60px"></canvas>
+    <div class="lbl">animated</div></div>
   </div>
 </div>
 <div class="card">
   <h3>scattercast<span class="tag player">player</span></h3>
   <div class="meta">pellet &middot; 1f @ 10t
-    &middot; hitbox r 0.12t &middot; scale 0.768<br>weapon:scattercast</div>
-  <img class="sheet" id="img-scattercast" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAATUlEQVR42mNgGAWjYBSMglEwlIGdf8J/EB4wi9ExXS2vmbIKBdPNEdgsR3bEgPiebqEw4A4Y8CgYFIlwwLPhoCiIRsEoGAWjYBRQEwAAWxycUdb2H30AAAAASUVORK5CYII=" alt="scattercast sheet"
-       width="64" height="64" draggable="false">
-  <div class="lbl">sheet &middot; 1 frame at 2x</div>
+    &middot; hitbox r 0.12t &middot; cell 12px<br>weapon:scattercast</div>
+  <img class="sheet" id="img-scattercast" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAAMElEQVR42mNgoDuw80/4j4yJUlwzZRUY49WErpigJmyKkTVRRwNJTiLZ02QFK00AAK4odykbrWRVAAAAAElFTkSuQmCC" alt="scattercast sheet"
+       width="24" height="24" draggable="false">
+  <div class="lbl">sheet &middot; 1 frame &middot; in-game size at 2x zoom</div>
   <div class="row anim">
-    <div><canvas id="a-scattercast" width="48" height="48"></canvas><div class="lbl">authored 4x</div></div>
-    <div><canvas id="g-scattercast" width="48" height="48"></canvas><div class="lbl">in-game 2x</div></div>
+    <div><canvas id="c-scattercast" width="12" height="12"
+         style="width:24px;height:24px"></canvas>
+    <div class="lbl">animated</div></div>
   </div>
 </div>
 <div class="card">
   <h3>wheelblade<span class="tag player">player</span></h3>
   <div class="meta">tri-blade &middot; 4f @ 8t
-    &middot; hitbox r 0.2t &middot; scale 0.7111<br>weapon:wheelblade</div>
-  <img class="sheet" id="img-wheelblade" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAAAgCAYAAADaInAlAAAA80lEQVR42u2Y2w2CQBBFqcwWbIF6rMIi7E/DB4nZ6CoE7r0w5yT7xccMM2efwwAAAAAAAAAA/3C5js9pUImiDTl7vEM2v4IASNApjKo4VWKusk6Z5Bzndn/IZ+MU0xVXJkFr3dKhan41ASwSzIHfg/e+KaRs4ypXRXkjGgHaPsgl+DT2SqYnnLsJTvm+TUiLBFsH/9V0hwBuAZfUYpeclAVIE0A9ASIFcC2B7i3AvQVGbAEJhyDHITDpEGw7BKZcg9TXwLRrsHPixQmgeAhKewiTPwRFPUseIJdS/5lU8GoCRCWUVqCzC0BCAAAAAAAAALCGFzioYjbg2yMEAAAAAElFTkSuQmCC" alt="wheelblade sheet"
-       width="256" height="64" draggable="false">
-  <div class="lbl">sheet &middot; 4 frames at 2x</div>
+    &middot; hitbox r 0.2t &middot; cell 18px<br>weapon:wheelblade</div>
+  <img class="sheet" id="img-wheelblade" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEgAAAASCAYAAAD4+JjWAAAAj0lEQVR42mNgGAWjYBSMghEG7PwT/lOil1L9gz5wBjqAKAokmAHYDMEnR6zZXQu2DHgAUeoGFEOQMbkGU6of3V3UMoeiwEZ2DDmOQg9YanqMmuagJwS6OYjaAURphA26AKJmFqNFlqc4i1Gt1KewgKR2pUGVQppWAUQL8wbcflp4aKADaLSpPgpGwSgYKgAAbeArGD7Zr0MAAAAASUVORK5CYII=" alt="wheelblade sheet"
+       width="144" height="36" draggable="false">
+  <div class="lbl">sheet &middot; 4 frames &middot; in-game size at 2x zoom</div>
   <div class="row anim">
-    <div><canvas id="a-wheelblade" width="48" height="48"></canvas><div class="lbl">authored 4x</div></div>
-    <div><canvas id="g-wheelblade" width="48" height="48"></canvas><div class="lbl">in-game 2x</div></div>
+    <div><canvas id="c-wheelblade" width="18" height="18"
+         style="width:36px;height:36px"></canvas>
+    <div class="lbl">animated</div></div>
   </div>
 </div>
 </div>
-<h2>Hostile families (one shared signature — §2.6, Law 3)</h2>
+<h2>Player — future frame candidates</h2>
+<div class="cards">
+<div class="card">
+  <h3>lance<span class="tag player">player</span></h3>
+  <div class="meta">lance &middot; 1f @ 10t
+    &middot; hitbox r 0.15t &middot; cell 28px<br>reserved:frame-candidate</div>
+  <img class="sheet" id="img-lance" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAAM0lEQVR42mNgGAWjYBSMglFAN2Dnn/AfH6aJwSlN07BiihxCdwvpHqSjYBSMglEwCkgGAHo8clVFtqeEAAAAAElFTkSuQmCC" alt="lance sheet"
+       width="56" height="56" draggable="false">
+  <div class="lbl">sheet &middot; 1 frame &middot; in-game size at 2x zoom</div>
+  <div class="row anim">
+    <div><canvas id="c-lance" width="28" height="28"
+         style="width:56px;height:56px"></canvas>
+    <div class="lbl">animated</div></div>
+  </div>
+</div>
+<div class="card">
+  <h3>plate<span class="tag player">player</span></h3>
+  <div class="meta">plate &middot; 1f @ 10t
+    &middot; hitbox r 0.14t &middot; cell 18px<br>reserved:frame-candidate</div>
+  <img class="sheet" id="img-plate" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAALElEQVR42mNgGAVkATv/hP/4MFUMIdowmMKKntlY8ahBg9kguqSl0SxLHgAAf0HRibr8tDoAAAAASUVORK5CYII=" alt="plate sheet"
+       width="36" height="36" draggable="false">
+  <div class="lbl">sheet &middot; 1 frame &middot; in-game size at 2x zoom</div>
+  <div class="row anim">
+    <div><canvas id="c-plate" width="18" height="18"
+         style="width:36px;height:36px"></canvas>
+    <div class="lbl">animated</div></div>
+  </div>
+</div>
+<div class="card">
+  <h3>sliver<span class="tag player">player</span></h3>
+  <div class="meta">sliver &middot; 1f @ 10t
+    &middot; hitbox r 0.1t &middot; cell 18px<br>reserved:frame-candidate</div>
+  <img class="sheet" id="img-sliver" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAKElEQVR42mNgGAWjADew80/4D8Jka4ThqOJ2MEYXp59BVPPaKBhJAABydi+9Y9QaCgAAAABJRU5ErkJggg==" alt="sliver sheet"
+       width="36" height="36" draggable="false">
+  <div class="lbl">sheet &middot; 1 frame &middot; in-game size at 2x zoom</div>
+  <div class="row anim">
+    <div><canvas id="c-sliver" width="18" height="18"
+         style="width:36px;height:36px"></canvas>
+    <div class="lbl">animated</div></div>
+  </div>
+</div>
+</div>
+<h2>Hostile — Phase A roster (one shared signature, §2.6 / Law 3)</h2>
 <div class="cards">
 <div class="card">
   <h3>fan_wedge<span class="tag hostile">hostile</span></h3>
   <div class="meta">wedge &middot; 4f @ 10t
-    &middot; hitbox r 0.2t &middot; scale 1.8286<br>enemy:fanmaw, elite:yard_warden:p1</div>
-  <img class="sheet" id="img-fan_wedge" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAAAgCAYAAADaInAlAAAArklEQVR42u3Z0QnCMBCA4Q7R0ZzN507lAo7gAJWWClVKKNjkAvd9kOf/JIXTOgwAAAAAF5hfj1k/YX8Jf45+kv4+upz7bWw6gH5Q/ze6Py0G0A/ql8ItBtAP6p8J1xxAP6B/tF/WwHNaT+0BDvfb1i7NULMf/fnPnL/7xf3S4AL0y5de/QF0AckfACsg+QrwJUjfzyB9L0L0vQrV7/7PCP1u+l+D6OftAwAAAH15A4l6aatrkwatAAAAAElFTkSuQmCC" alt="fan_wedge sheet"
-       width="256" height="64" draggable="false">
-  <div class="lbl">sheet &middot; 4 frames at 2x</div>
+    &middot; hitbox r 0.2t &middot; cell 46px<br>enemy:fanmaw, elite:yard_warden:p1</div>
+  <img class="sheet" id="img-fan_wedge" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALgAAAAuCAYAAACbDNOZAAABIElEQVR42u3c2w3CIBiA0Q7haM7ms1O5gCM4QE0a+2YMUAR+er6E99MGEnpdFkmSJEmSJEmSJOlo6+ux7oObexr3jr1dL9uIAufmTlqFOzgCnJu7GDwynJv7MHhEODd31r4pZYwA5+ausgpHgnNz/xXcC87N3QTcGs7NXX3fNAKcm7vZKmwF5+auCl6f9230hmfddvqYS+293FHP9xATvAQ8wkQpnSBH7D3cUc93d3fpKuw9UbhjuE1wbhPcFsUWxRbFRY+LTBeZbltxc3vwwH0qt0fH3Kdwe/mH+xTuagfg9U3uKO+xewGfe2p32e06n1BxB3NnHYCPYLmjupMOwG8MuKO7f+6//IiGeyb319XKzT2bW5IkSZIkSZIkSRm9AbiS1T+mx9R/AAAAAElFTkSuQmCC" alt="fan_wedge sheet"
+       width="368" height="92" draggable="false">
+  <div class="lbl">sheet &middot; 4 frames &middot; in-game size at 2x zoom</div>
   <div class="row anim">
-    <div><canvas id="a-fan_wedge" width="48" height="48"></canvas><div class="lbl">authored 4x</div></div>
-    <div><canvas id="g-fan_wedge" width="48" height="48"></canvas><div class="lbl">in-game 2x</div></div>
+    <div><canvas id="c-fan_wedge" width="46" height="46"
+         style="width:92px;height:92px"></canvas>
+    <div class="lbl">animated</div></div>
   </div>
 </div>
 <div class="card">
   <h3>husk_dart<span class="tag hostile">hostile</span></h3>
   <div class="meta">teardrop &middot; 4f @ 10t
-    &middot; hitbox r 0.18t &middot; scale 1.44<br>enemy:husk_archer</div>
-  <img class="sheet" id="img-husk_dart" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAAAgCAYAAADaInAlAAAArUlEQVR42u3Z2w2DIABAUeboDB3VITpVF+gIDoDR9KPxFVGRVM5J+L7YElEMAQAAAGAktu+oX1m/jy4N/Rv3f0PN8zEZuSeiX7C/Fr5iIvpl+2FrfG4i+n/eT1l9OVajftl+8gTi5zWMsyaSdPv7tsdzuKpf+vqzLIQ9F7/2I+jnvf3PtQ9tCf4AC8AWUPsW4CGs4odAr2H6DmJqPwhyFKvvY4i+z6H6AAAAwN10hw10GYDotvsAAAAASUVORK5CYII=" alt="husk_dart sheet"
-       width="256" height="64" draggable="false">
-  <div class="lbl">sheet &middot; 4 frames at 2x</div>
+    &middot; hitbox r 0.18t &middot; cell 42px<br>enemy:husk_archer</div>
+  <img class="sheet" id="img-husk_dart" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKgAAAAqCAYAAAAnMxBnAAAA/klEQVR42u3b2w2CMBiA0c7hDI7qEE7lAo7gAJgYfdBAQHv7pedLeD8pFaSUlCRJkiRJkiRJkqSspttlmjs4OUPgTsfD7BEBzTmgcw24BObkbILcCuwJ5hzQmYNsieUc0Pnt5b0XmHNMZyqJrAnmHNNZDVoayzmgsyayJLiUc7qeH0d057+MZ/WJWuRP8vOkr538F5hzH84tP/hcZ/MB/RWb6/w01jr5o4xnK6cJaoKaoG6dbvFdb/EekjwkVX2atyzCGXot1MIyZ/iFeq/mOEO/k7e5gXPXO5psD+NMrbA22HJGdb5hfaLAGdG5iPaRF2eSJEmSJEmSJEmSunYHDQyrgukhJrYAAAAASUVORK5CYII=" alt="husk_dart sheet"
+       width="336" height="84" draggable="false">
+  <div class="lbl">sheet &middot; 4 frames &middot; in-game size at 2x zoom</div>
   <div class="row anim">
-    <div><canvas id="a-husk_dart" width="48" height="48"></canvas><div class="lbl">authored 4x</div></div>
-    <div><canvas id="g-husk_dart" width="48" height="48"></canvas><div class="lbl">in-game 2x</div></div>
+    <div><canvas id="c-husk_dart" width="42" height="42"
+         style="width:84px;height:84px"></canvas>
+    <div class="lbl">animated</div></div>
   </div>
 </div>
 <div class="card">
   <h3>lead_needle<span class="tag hostile">hostile</span></h3>
   <div class="meta">needle &middot; 1f @ 10t
-    &middot; hitbox r 0.18t &middot; scale 2.0945<br>enemy:leadshot</div>
-  <img class="sheet" id="img-lead_needle" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAARklEQVR42mNgGAWjYBSMglEwCoYq+P/52n9kTFfLiMVUt7BKrgoF/3+8AIwxxCl10IA7YMCjYNAlwlEwCkbBKBgFo4CWAABhhRHI2cfbIwAAAABJRU5ErkJggg==" alt="lead_needle sheet"
-       width="64" height="64" draggable="false">
-  <div class="lbl">sheet &middot; 1 frame at 2x</div>
+    &middot; hitbox r 0.18t &middot; cell 64px<br>enemy:leadshot</div>
+  <img class="sheet" id="img-lead_needle" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAdklEQVR42u3X0QmAIBQFUCdpUKdpqhZohAaw3wwhCI3Uc+D9BvdmqSEAAAAAAADQVjq2dJ3pAsclZjNUIfcwpcBPU3rG0IG7KqR12LeldPV2075m85tV8sVyblVAlUKmL2D6T8BP0DboIOQo7DIEAAAAAAAwoBPPFEhxLpkw7wAAAABJRU5ErkJggg==" alt="lead_needle sheet"
+       width="128" height="128" draggable="false">
+  <div class="lbl">sheet &middot; 1 frame &middot; in-game size at 2x zoom</div>
   <div class="row anim">
-    <div><canvas id="a-lead_needle" width="48" height="48"></canvas><div class="lbl">authored 4x</div></div>
-    <div><canvas id="g-lead_needle" width="48" height="48"></canvas><div class="lbl">in-game 2x</div></div>
+    <div><canvas id="c-lead_needle" width="64" height="64"
+         style="width:128px;height:128px"></canvas>
+    <div class="lbl">animated</div></div>
   </div>
 </div>
 <div class="card">
   <h3>ring_roundel<span class="tag hostile">hostile</span></h3>
   <div class="meta">roundel &middot; 4f @ 10t
-    &middot; hitbox r 0.2t &middot; scale 0.7529<br>enemy:ringer, elite:yard_warden:p2</div>
-  <img class="sheet" id="img-ring_roundel" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAAAgCAYAAADaInAlAAAA1klEQVR42u3azQ3CMAxA4czBDCzIHgzQqbj0yAgMUE6gpnKDkJpGbb4n+fzs2Kry05QAAAAAAFhnej2mUvCf2D8X3S/XLPZIgr+RPxKPwy2Lmonwt/WnkriUCP8J/PPJi0RRYvNJ5D+wvySfnkMWNZJY8y/dn9jL37r+ZfOrDUGUQFR8tAi1FmDNvRyCWv7W9X8/8YF7a3/6p/jSIvBv5/81gFv6NcAAaIAB0IC+B8AmsPNNoGNgx8dAFzH8rkL5PYZ0/xjkOZY/TMIPGf35AQAAAACH5g3TE4nl6cBnlAAAAABJRU5ErkJggg==" alt="ring_roundel sheet"
-       width="256" height="64" draggable="false">
-  <div class="lbl">sheet &middot; 4 frames at 2x</div>
+    &middot; hitbox r 0.2t &middot; cell 20px<br>enemy:ringer, elite:yard_warden:p2</div>
+  <img class="sheet" id="img-ring_roundel" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAAAUCAYAAAAa2LrXAAAAqklEQVR42u3YwQ2AIAwFUOZwBhd0DwdgKi8eHcEBMJpASFMEaUkw/Cb/4uFFWwyoMShU9+XOzd2BV4GkAq8AW6eZzVd0KC+GdruwiWF4iUlwAL2Wm8xonqFY6Pxhn1A4NxXO81ZsSjzt++NS6jV/YGr59DSQao8uZw6j6Nuy/qOXamCJhwZKG4hXWO5hE9HYRHCMERxjcJCWe/iUU/DwM0HBw+8sRQ+FalcXe7FD6fXAPl8AAAAASUVORK5CYII=" alt="ring_roundel sheet"
+       width="160" height="40" draggable="false">
+  <div class="lbl">sheet &middot; 4 frames &middot; in-game size at 2x zoom</div>
   <div class="row anim">
-    <div><canvas id="a-ring_roundel" width="48" height="48"></canvas><div class="lbl">authored 4x</div></div>
-    <div><canvas id="g-ring_roundel" width="48" height="48"></canvas><div class="lbl">in-game 2x</div></div>
+    <div><canvas id="c-ring_roundel" width="20" height="20"
+         style="width:40px;height:40px"></canvas>
+    <div class="lbl">animated</div></div>
   </div>
 </div>
 <div class="card">
   <h3>warden_star<span class="tag hostile">hostile</span></h3>
-  <div class="meta">star4 &middot; 6f @ 10t
-    &middot; hitbox r 0.2t &middot; scale 1.6<br>elite:yard_warden:p3</div>
-  <img class="sheet" id="img-warden_star" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAAAgCAYAAABEmHeFAAAB50lEQVR42u1b223DMBDzOB0ro3SUTJUFMkIHSJAiBhxF8qmojqRiEtBXkVL34On08LIYhmEYhmEYhmEYhhHj9nO5PQaD19436DlxJAFYdI6PlADQvCxb3RWIxmYlRZMr8M4QXOZcj5AP9EQ8fX1TA4zi/ivnDHMczb3mAlwAD2J0IpYCQHNvbY64RyVFaW/t/23/NiImvXPfch4mF2pGo6sNi3vlLbnLKjiyIrZsLsdon0Q2lbxIATDz4C0RmIbvJcToOfVwZwWk5fPsWETiaxWErPYKyb1Ey2wrEdACiESQVYn3BkJ8Ld4M7l6bs1eeKP7pG5wX0uv5d+wlYuqyV+FHJkOLPysYvf6HFZ2CHy36Gv+QOXQp7kkeJcHIjWAt+SIRpm26GvyZq2DEj+JG8kfFN8X/SgKgOEAoAVQEwC4AtALIbIFoS6BIC6DSAim1gNQWGLUJltoEETaBaptghUMAhUMQyjEo+xiMfQzIPgZVOQZWOAbXuIQAzkHlIoh1ERa2YKCLQLXce+8FSa8kM6/ClZ4CMJ5C9MQc9RQEFfN/VceFBAVnICqewmM4hZgzH0PKCkBhHtkVD/U7pG2zx1vmIxGlj1U+9cMZ+3gCpyglyycKwHOxAAzH2jAMwzAMwzAMwzDmxB0BbJuq8px+VAAAAABJRU5ErkJggg==" alt="warden_star sheet"
-       width="384" height="64" draggable="false">
-  <div class="lbl">sheet &middot; 6 frames at 2x</div>
+  <div class="meta">star4 &middot; 8f @ 10t
+    &middot; hitbox r 0.2t &middot; cell 68px<br>elite:yard_warden:p3</div>
+  <img class="sheet" id="img-warden_star" src="data:image/png;base64,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" alt="warden_star sheet"
+       width="1088" height="136" draggable="false">
+  <div class="lbl">sheet &middot; 8 frames &middot; in-game size at 2x zoom</div>
   <div class="row anim">
-    <div><canvas id="a-warden_star" width="48" height="48"></canvas><div class="lbl">authored 4x</div></div>
-    <div><canvas id="g-warden_star" width="48" height="48"></canvas><div class="lbl">in-game 2x</div></div>
+    <div><canvas id="c-warden_star" width="68" height="68"
+         style="width:136px;height:136px"></canvas>
+    <div class="lbl">animated</div></div>
+  </div>
+</div>
+</div>
+<h2>Hostile — extended vocabulary (one lane per role-grammar pressure)</h2>
+<div class="cards">
+<div class="card">
+  <h3>bar_sweep<span class="tag hostile">hostile</span></h3>
+  <div class="meta">bar &middot; 4f @ 10t
+    &middot; hitbox r 0.2t &middot; cell 62px<br>grammar:sweeper</div>
+  <img class="sheet" id="img-bar_sweep" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPgAAAA+CAYAAAAGYNaiAAABh0lEQVR42u3YwQ3CMBAEQFdBJdRFTVRFA5RAAUYg8QA5UZwHUvZmJRcwWd9h0ZqIiIjI5vTHrb8ONzd3GHbpcHNzHxx9OZ2HJxXPzR3vXgOPPgA3N3fIRkvdcNzcFdxTWy1pu3Fzl/gVVzg3d6h79tmS8nzh5i7xTFc4N7cBVzg3Nzg3Nzc4Nzc3ODc3Nzg3Nzc4N7cBVzg3twFXODc3ODc3Nzg3Nzc4Nzc3ODc3t8K5uQ24wrm5DTg3Nzc4Nzc3ODc39z/g/X59n0qFf8xL9uSLXrHvsgNe8aL/mkd2i43bRefmNuAK5+Y24OAuur65/emicH37kw2cm9uAK5yb24ArnJsbnJubG5ybmxucm5sbnJubW+Hc3AZc4dzc4Nzc3ODc3Nzg3Nzc4Nzc3ODc3AZc4dzcBlzh3Nzg3Nzc4Nzc3ODc3Nz78Xvg7eDh5q7gVjg3d/qAz+Ajni3c3EXc09stBs3NXcS9acNFbTRu7mLuL/zSaaHh5q7gHn6EVizc3CIiIiLreQKZMrmzSc0y6AAAAABJRU5ErkJggg==" alt="bar_sweep sheet"
+       width="496" height="124" draggable="false">
+  <div class="lbl">sheet &middot; 4 frames &middot; in-game size at 2x zoom</div>
+  <div class="row anim">
+    <div><canvas id="c-bar_sweep" width="62" height="62"
+         style="width:124px;height:124px"></canvas>
+    <div class="lbl">animated</div></div>
+  </div>
+</div>
+<div class="card">
+  <h3>boulder<span class="tag hostile">hostile</span></h3>
+  <div class="meta">boulder &middot; 4f @ 10t
+    &middot; hitbox r 0.3t &middot; cell 26px<br>grammar:siege</div>
+  <img class="sheet" id="img-boulder" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGgAAAAaCAYAAABb9hlrAAAAzUlEQVR42u3a2Q2AIBBFUSuxGOuxKKuyAUuwAPxVwqIPxCHeSeaXExgkLA4DQRANwu2rCyXOx8650XkaL1kTxBEBv/FYqiCO4DxFVAxHcFTkKYYjFqkEOWM4Lzg1kDsYjlikHOS25ZJvdMg3clbJwLXoj2/JBcqtocrAhbCUEzNSluK06k9NR5rVyuz+k6MUKPoVUSDbDgNHgVjiipc4NgmGNwlss41vszlAdnBQ5QrGvsMlpvXLUp4B7Ds8pHXg8BTdicPPHJ04BEGE4gB7S0iTgKkbqAAAAABJRU5ErkJggg==" alt="boulder sheet"
+       width="208" height="52" draggable="false">
+  <div class="lbl">sheet &middot; 4 frames &middot; in-game size at 2x zoom</div>
+  <div class="row anim">
+    <div><canvas id="c-boulder" width="26" height="26"
+         style="width:52px;height:52px"></canvas>
+    <div class="lbl">animated</div></div>
+  </div>
+</div>
+<div class="card">
+  <h3>comet<span class="tag hostile">hostile</span></h3>
+  <div class="meta">comet &middot; 4f @ 10t
+    &middot; hitbox r 0.12t &middot; cell 34px<br>grammar:predictive-fast</div>
+  <img class="sheet" id="img-comet" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIgAAAAiCAYAAACEPZHaAAAAn0lEQVR42u3ZywmEMBRAUWuwKOt0aUXTgCVYQERhNkqQmCeKngNZv4sT/GSaBgAAAACAG6Tpl5alQ8dueG7p+FjHdtDQtdl1ZYyOB3WUDM8F6XhZR83gyBAdD+ko3Y1p7NcVHaMj9i5R3XFm+P9ilFyUoxAdMXeK8I3qh7FBPGI8YuLfh7wc6vBZpyP+TMbBkA5Hyzr8OaUDAAAAAIA6M2AfHdjmXHP1AAAAAElFTkSuQmCC" alt="comet sheet"
+       width="272" height="68" draggable="false">
+  <div class="lbl">sheet &middot; 4 frames &middot; in-game size at 2x zoom</div>
+  <div class="row anim">
+    <div><canvas id="c-comet" width="34" height="34"
+         style="width:68px;height:68px"></canvas>
+    <div class="lbl">animated</div></div>
+  </div>
+</div>
+<div class="card">
+  <h3>crescent<span class="tag hostile">hostile</span></h3>
+  <div class="meta">crescent &middot; 4f @ 10t
+    &middot; hitbox r 0.22t &middot; cell 46px<br>grammar:wave</div>
+  <img class="sheet" id="img-crescent" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALgAAAAuCAYAAACbDNOZAAABaElEQVR42u3d0Q3CIBAA0A7hdM7kEE7lAo7gAJo08UOtSuNZjsu7hP/HBQpt6DFNQgghxBzXy+m61Li5h3S/gx52+7ll7Qg3dzP4jmxtPTvAzd0EXov91glu7u7uaPRWeG7uLuB/d4CbOw06Gs/NnQ4dhefmboZvjY5KODd3OnTEssPNnXLJiUo2N3e6WRn5osPNnXLJGS3Z3GO6u8zKqM+Z3Nwp91Tc3J7e3NwSzs0t4dz23z+CzseHNsoZCO4Ox2A/mEMPVkXBn5P9rgORTxPu8dxrJmaq7UmPhHNzSzi3AW6p5y69RfGyxl32JdNnK27fwSWc2wCXcO7EA9zhH+6yh608VbhtUxzA5x7Y3W12+vWLe7OCP36C5a7s7roEKb/AXXqQK6DDXbo+ihJo3KXrEypiyV22wqxyvtwl64QryM5d9pYHV2pwZ3K/dMClSNwV3YsdcK0ddzV3c0em5MHNLYQQIlPcAH9106qdXNoyAAAAAElFTkSuQmCC" alt="crescent sheet"
+       width="368" height="92" draggable="false">
+  <div class="lbl">sheet &middot; 4 frames &middot; in-game size at 2x zoom</div>
+  <div class="row anim">
+    <div><canvas id="c-crescent" width="46" height="46"
+         style="width:92px;height:92px"></canvas>
+    <div class="lbl">animated</div></div>
+  </div>
+</div>
+<div class="card">
+  <h3>cross_plus<span class="tag hostile">hostile</span></h3>
+  <div class="meta">cross &middot; 12f @ 8t
+    &middot; hitbox r 0.2t &middot; cell 40px<br>grammar:spinner</div>
+  <img class="sheet" id="img-cross_plus" src="data:image/png;base64,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" alt="cross_plus sheet"
+       width="960" height="80" draggable="false">
+  <div class="lbl">sheet &middot; 12 frames &middot; in-game size at 2x zoom</div>
+  <div class="row anim">
+    <div><canvas id="c-cross_plus" width="40" height="40"
+         style="width:80px;height:80px"></canvas>
+    <div class="lbl">animated</div></div>
+  </div>
+</div>
+<div class="card">
+  <h3>hex_star<span class="tag hostile">hostile</span></h3>
+  <div class="meta">star6 &middot; 8f @ 10t
+    &middot; hitbox r 0.24t &middot; cell 58px<br>grammar:radial-heavy</div>
+  <img class="sheet" id="img-hex_star" src="data:image/png;base64,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" alt="hex_star sheet"
+       width="928" height="116" draggable="false">
+  <div class="lbl">sheet &middot; 8 frames &middot; in-game size at 2x zoom</div>
+  <div class="row anim">
+    <div><canvas id="c-hex_star" width="58" height="58"
+         style="width:116px;height:116px"></canvas>
+    <div class="lbl">animated</div></div>
+  </div>
+</div>
+<div class="card">
+  <h3>shard<span class="tag hostile">hostile</span></h3>
+  <div class="meta">shard &middot; 1f @ 10t
+    &middot; hitbox r 0.08t &middot; cell 54px<br>grammar:volley</div>
+  <img class="sheet" id="img-shard" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADYAAAA2CAYAAACMRWrdAAAAaklEQVR42u3W0QmAIBRAUSdx9r4bqAUaoQEM/JQIIgmfnQNvgMsTNSUAAAAA5lGOrbQzVdiac52r0JDRbdjdhIp+EvYm+vPwXmHDbbvbxvalzjDRwn57FCNfHqGv++ke6Om+VAAAAACM4wSWZ+RTnLUjcgAAAABJRU5ErkJggg==" alt="shard sheet"
+       width="108" height="108" draggable="false">
+  <div class="lbl">sheet &middot; 1 frame &middot; in-game size at 2x zoom</div>
+  <div class="row anim">
+    <div><canvas id="c-shard" width="54" height="54"
+         style="width:108px;height:108px"></canvas>
+    <div class="lbl">animated</div></div>
+  </div>
+</div>
+<div class="card">
+  <h3>spark<span class="tag hostile">hostile</span></h3>
+  <div class="meta">spark &middot; 1f @ 10t
+    &middot; hitbox r 0.1t &middot; cell 36px<br>grammar:swarm</div>
+  <img class="sheet" id="img-spark" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAAp0lEQVR42u2WwQ2AMAhFO4RDOLFnp3IBR3CAmpg0QUJLJUJ7+D/hYLX8FwVqShAEQbLydeQRe5tJLYmt+1ySu8IUg21duky+POsOFQZDzYohNS3X9H5Yx3GoYTAciELxtVAgDiABhg/KFlA4zKtezv2J8DdU+1QcyB1MqxktfgOT2rnVWT3rJjA+W7SozSQt3A5QS3e51tewdgdQ9N8kgAA0LRAEzaQb9m0zxfGEAr8AAAAASUVORK5CYII=" alt="spark sheet"
+       width="72" height="72" draggable="false">
+  <div class="lbl">sheet &middot; 1 frame &middot; in-game size at 2x zoom</div>
+  <div class="row anim">
+    <div><canvas id="c-spark" width="36" height="36"
+         style="width:72px;height:72px"></canvas>
+    <div class="lbl">animated</div></div>
+  </div>
+</div>
+<div class="card">
+  <h3>twin_orb<span class="tag hostile">hostile</span></h3>
+  <div class="meta">twin &middot; 8f @ 12t
+    &middot; hitbox r 0.18t &middot; cell 44px<br>grammar:paired</div>
+  <img class="sheet" id="img-twin_orb" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWAAAAAsCAYAAABbjGLvAAADpklEQVR42u2d21EsMQxENxRCu1EQD1GRwA2BAOAbimE9tmR1W6er+KV6NNpjS37M44EQQgghhBBCCCGEEEJj+vx4//z5p+zNxSeZhRB6CozXl3/f/hQgcuXtyitxXBjN+DmgLjNLhXwfhVsV4Ea9/fRJDCfNAmJ0IngV830Wbrv8zvjbDeE78K0cJG4bBcToZPBW5/sq3LK9rvjbBblZ+G6H8MooodLToV3iU9a79Cyr8j0KblleV8Hm5lEyGav7TiO+AbEu4KpArJ7vUeDIhEeUPweP6TlqMUosJigQ1u1bOpX2O/IpGm4ZXtUBHDmIpb5vC5NBgVWBcEQprtpuWXk3LqW90+wyw2e0PwePADhoVKtczf7L/whII/6HMtxcFo6cZm4AWLiScAik08JExI/qyp/DXtBOpT1ww2MrAGfPXLLK+Yh2iULL5Vl8Opb2wA2PAHhhFnxV0kfBOKokr3ofd2IEgPGIx0MBnNUXyyznM2K7853cbXnI99vM8r2Tx64xTEvI6HJeAWZ3n8MZwI7xHt0pAoAB8NEAzpjRqMBs9BmU4OvqPaJ14jJQuPbTHU7CtdqGRjnvDeBObZMOcHPZlaS+6yV1V9H0Cvv/t29/mQ8T8qIn/c74V/I7mujLx3M3+131H+E3Y+Ho8q7aCb+VB1tG/CodvHnmN3WP/dSlJAsJXAHhSECcCmCX+EYMHqt+s+Ab5bf6aPcI0Cr9zcY37UCGegIDYADsPIGwBoQ5gC0GOPUSzqlEdgOwW4vHrYVmXyIbtyCsWjzqixgui0Rui3BsmdOGr+qd3G63KNoscipv43HYJgWAz8qFrlc6um9Ds4+76kZ2h4MCTrNK14MXLgeJdngHYg1ir3SSSP2orBuA3Y56q+UjAAbArQD82wxd7bIYp8t4Ol52dBKA8X6+d2nzqtclulxH6XjdJyDAOwA2CnzVqq3LhexuiyqAAO+tANy997Par1T/JJHjJ59c89HlCk8mYgBYwn906az6UU63j54CYH/vxL6oVH0USf2z6dWaOppu9D5P2kdL5VHvvQTAS8eCBYA28gxqn3yviM9ojNwGjFNOknGYoXbwK8v92YdQA9pvpXxn8LrGxzEfHb4kvcO78zHq0t/A7Qt8gBoiH8Nn77R+9vuXYtnTq94ALyIfU2bvCt4d4bviX5ZnlPGIfMyHsOIA4gjfE2KPEEoaNJwWhUchpu7fLe4IoU2zd+eqw/0ZyEiEEEIIIYQQQggZ6At7YPK0fcax2QAAAABJRU5ErkJggg==" alt="twin_orb sheet"
+       width="704" height="88" draggable="false">
+  <div class="lbl">sheet &middot; 8 frames &middot; in-game size at 2x zoom</div>
+  <div class="row anim">
+    <div><canvas id="c-twin_orb" width="44" height="44"
+         style="width:88px;height:88px"></canvas>
+    <div class="lbl">animated</div></div>
   </div>
 </div>
 </div>
@@ -167,8 +337,8 @@ over it — hostile must stay legible above all of it.</p>
 <script>
 document.documentElement.classList.add('js');
 document.getElementById('pauseToggle').hidden = false;
-const PACK = {"cell": 32, "families": {"fan_wedge": {"frames": 4, "rateTicks": 10, "renderScale": 1.8286, "role": "hostile"}, "husk_dart": {"frames": 4, "rateTicks": 10, "renderScale": 1.44, "role": "hostile"}, "lead_needle": {"frames": 1, "rateTicks": 10, "renderScale": 2.0945, "role": "hostile"}, "longbolt": {"frames": 1, "rateTicks": 10, "renderScale": 1.0, "role": "player"}, "ring_roundel": {"frames": 4, "rateTicks": 10, "renderScale": 0.7529, "role": "hostile"}, "scattercast": {"frames": 1, "rateTicks": 10, "renderScale": 0.768, "role": "player"}, "warden_star": {"frames": 6, "rateTicks": 10, "renderScale": 1.6, "role": "hostile"}, "wheelblade": {"frames": 4, "rateTicks": 8, "renderScale": 0.7111, "role": "player"}}, "tps": 60};
-const CELL = PACK.cell, TPS = PACK.tps;
+const PACK = {"families": {"bar_sweep": {"cellPx": 62, "frames": 4, "rateTicks": 10, "role": "hostile"}, "boulder": {"cellPx": 26, "frames": 4, "rateTicks": 10, "role": "hostile"}, "comet": {"cellPx": 34, "frames": 4, "rateTicks": 10, "role": "hostile"}, "crescent": {"cellPx": 46, "frames": 4, "rateTicks": 10, "role": "hostile"}, "cross_plus": {"cellPx": 40, "frames": 12, "rateTicks": 8, "role": "hostile"}, "fan_wedge": {"cellPx": 46, "frames": 4, "rateTicks": 10, "role": "hostile"}, "hex_star": {"cellPx": 58, "frames": 8, "rateTicks": 10, "role": "hostile"}, "husk_dart": {"cellPx": 42, "frames": 4, "rateTicks": 10, "role": "hostile"}, "lance": {"cellPx": 28, "frames": 1, "rateTicks": 10, "role": "player"}, "lead_needle": {"cellPx": 64, "frames": 1, "rateTicks": 10, "role": "hostile"}, "longbolt": {"cellPx": 30, "frames": 1, "rateTicks": 10, "role": "player"}, "plate": {"cellPx": 18, "frames": 1, "rateTicks": 10, "role": "player"}, "ring_roundel": {"cellPx": 20, "frames": 4, "rateTicks": 10, "role": "hostile"}, "scattercast": {"cellPx": 12, "frames": 1, "rateTicks": 10, "role": "player"}, "shard": {"cellPx": 54, "frames": 1, "rateTicks": 10, "role": "hostile"}, "sliver": {"cellPx": 18, "frames": 1, "rateTicks": 10, "role": "player"}, "spark": {"cellPx": 36, "frames": 1, "rateTicks": 10, "role": "hostile"}, "twin_orb": {"cellPx": 44, "frames": 8, "rateTicks": 12, "role": "hostile"}, "warden_star": {"cellPx": 68, "frames": 8, "rateTicks": 10, "role": "hostile"}, "wheelblade": {"cellPx": 18, "frames": 4, "rateTicks": 8, "role": "player"}}, "tps": 60};
+const TPS = PACK.tps;
 const pause = document.getElementById('pauseToggle');
 const fams = [];
 for (const [key, fam] of Object.entries(PACK.families)) {
@@ -179,20 +349,18 @@ for (const [key, fam] of Object.entries(PACK.families)) {
 function frameOf(fam, tick) {
   return Math.floor(tick / fam.rateTicks) % fam.frames;
 }
-function drawShot(ctx, fam, tick, x, y, angle, scale) {
+function drawShot(ctx, fam, tick, x, y, angle) {
+  const s = fam.cellPx;
   ctx.save();
   ctx.translate(x, y);
   ctx.rotate(angle);
-  const s = CELL * scale;
   ctx.imageSmoothingEnabled = false;
-  ctx.drawImage(fam.img, frameOf(fam, tick) * CELL, 0, CELL, CELL,
-                -s / 2, -s / 2, s, s);
+  ctx.drawImage(fam.img, frameOf(fam, tick) * s, 0, s, s, -s / 2, -s / 2, s, s);
   ctx.restore();
 }
 const cards = fams.map(fam => ({
   fam,
-  authored: document.getElementById('a-' + fam.key).getContext('2d'),
-  ingame: document.getElementById('g-' + fam.key).getContext('2d'),
+  ctx: document.getElementById('c-' + fam.key).getContext('2d'),
   lastFrame: -1,
 }));
 function drawCards(tick) {
@@ -200,10 +368,9 @@ function drawCards(tick) {
     const f = frameOf(c.fam, tick);
     if (c.lastFrame === f) continue;
     c.lastFrame = f;
-    c.authored.clearRect(0, 0, 48, 48);
-    c.ingame.clearRect(0, 0, 48, 48);
-    drawShot(c.authored, c.fam, tick, 24, 24, 0, 1);
-    drawShot(c.ingame, c.fam, tick, 24, 24, 0, c.fam.renderScale);
+    const s = c.fam.cellPx;
+    c.ctx.clearRect(0, 0, s, s);
+    drawShot(c.ctx, c.fam, tick, s / 2, s / 2, 0);
   }
 }
 // Deterministic stress field: phases are pure functions of the emitter index
@@ -217,8 +384,7 @@ function stressField(ctx, tick) {
     const a = (i * 2.399963) % (Math.PI * 2);
     const r = 30 + ((i * 53) % 130) + ((tick * 2.2 + i * 17) % 160);
     drawShot(ctx, fam, tick + i * 3,
-             320 + Math.cos(a) * r, 180 + Math.sin(a) * r * 0.56,
-             a, fam.renderScale);
+             320 + Math.cos(a) * r, 180 + Math.sin(a) * r * 0.56, a);
   }
   for (let i = 0; i < 56; i++) {
     const fam = hostiles[i % hostiles.length];
@@ -226,7 +392,7 @@ function stressField(ctx, tick) {
     const r = 40 + ((i * 37) % 110) + 34 * Math.sin(tick * 0.02 + i);
     drawShot(ctx, fam, tick + i * 5,
              320 + Math.cos(a) * r, 180 + Math.sin(a) * r * 0.56,
-             a + Math.PI / 2, fam.renderScale);
+             a + Math.PI / 2);
   }
 }
 const stress = document.getElementById('stress').getContext('2d');

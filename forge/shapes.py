@@ -108,3 +108,54 @@ def sd_star(x: float, y: float, r: float, n: float, m: float) -> float:
 
 def sd_star4(x: float, y: float, r: float, m: float) -> float:
     return sd_star(x, y, r, 4.0, m)
+
+
+def sd_capsule_y(x: float, y: float, half_len: float, r: float) -> float:
+    """Capsule along the Y axis — a bar spanning the cross-axis (sweeper)."""
+    return sd_capsule_x(y, x, half_len, r)
+
+
+def sd_union(a: float, b: float) -> float:
+    return min(a, b)
+
+
+def sd_subtract(a: float, b: float) -> float:
+    """Approximate subtraction (exact inside, conservative near corners) —
+    good enough for rasterizing; the validator judges the rendered result."""
+    return max(a, -b)
+
+
+def sd_crescent_x(x: float, y: float, r: float, bite_x: float, bite_r: float) -> float:
+    """Solid crescent, horns forward (+X): disc of radius r at the origin
+    minus a bite disc ahead of it. The waist stays over the cell center so
+    the centered hitbox circle fits inside opaque body (Law 8)."""
+    return sd_subtract(sd_circle(x, y, r), sd_circle(x - bite_x, y, bite_r))
+
+
+def sd_cross(x: float, y: float, half_len: float, r: float, rot: float) -> float:
+    """Plus-cross: two perpendicular capsules, rotated by `rot` radians."""
+    c, s = math.cos(rot), math.sin(rot)
+    rx = x * c - y * s
+    ry = x * s + y * c
+    return sd_union(sd_capsule_x(rx, ry, half_len, r), sd_capsule_y(rx, ry, half_len, r))
+
+
+def sd_twin_orb(x: float, y: float, lobe_r: float, offset: float) -> float:
+    """Two overlapping lobes across the travel axis; the overlap waist covers
+    the cell center (solid, Law 8)."""
+    return sd_union(sd_circle(x, y - offset, lobe_r), sd_circle(x, y + offset, lobe_r))
+
+
+def sd_triangle_point_forward(x: float, y: float, apex_x: float, base_x: float, half_base: float) -> float:
+    """Sliver/shard: apex leads (+X), base trails — the point-forward
+    counterpart of the blunt-forward wedge."""
+    return sd_triangle_isosceles_back(-x, y, -apex_x, -base_x, half_base)
+
+
+def sd_box(x: float, y: float, half_w: float, half_h: float) -> float:
+    """Axis-aligned rectangle (the player plate)."""
+    dx = abs(x) - half_w
+    dy = abs(y) - half_h
+    ox = max(dx, 0.0)
+    oy = max(dy, 0.0)
+    return math.hypot(ox, oy) + min(max(dx, dy), 0.0)

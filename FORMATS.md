@@ -14,9 +14,15 @@ Lookup material for writing an importer against `dist/projectileforge/`.
 ## Sheets
 
 Single-loop-row layout (the same convention the retired spriteforge pack
-used for projectiles): frames left-to-right in one row, each cell
-`cell` × `cell` px (32 = one tile, CORE-20), transparent background, RGBA8,
-alpha strictly {0, 255}. Intended for Nearest filtering.
+used for projectiles): frames left-to-right in one row, transparent
+background, RGBA8, alpha strictly {0, 255}. Intended for Nearest filtering.
+
+Cells are **per-family and hitbox-native** (`families.<key>.cellPx`): each
+family is rasterized at its final on-screen size, `renderScale` is always
+1.0, and the game draws cells 1:1 in its 640x360 buffer — no runtime
+scaling, so pixels stay crisp and the hostile rim is a uniform 1px
+everywhere. Top-level `cell` (32) is the px-per-tile constant hitbox math
+uses, not the sheet cell size.
 
 **Orientation: shapes point +X.** Rotate the instance to the travel
 direction; there are no per-direction rows. Rotation-symmetric families
@@ -41,34 +47,34 @@ Per family (`families.<key>`):
 | field | meaning |
 |---|---|
 | `role` | `player` \| `hostile` — picks the render rule and draw band (§2.5: hostile projectiles render in their own band above all friendly VFX, from a separate node) |
+| `tier` | `core` (Phase A roster — what the game imports) \| `extended` (curation vocabulary) |
 | `silhouette` | declared shape class — unique across the pack |
 | `consumers` | roster entries firing this family (`weapon:*`, `enemy:*`, `elite:yard_warden:p*`) |
 | `image` | sheet PNG |
 | `frames` | frame count (1 = static) |
 | `rateTicks` | sim ticks per frame; loop rate = 60 / (frames × rateTicks) Hz |
+| `cellPx` | this family's (square) frame cell size |
 | `hitboxRadiusTiles` / `hitboxRadiusPx` | the §3.3/§3.4 collision radius this family is authored against |
 | `inscribedRadiusPx` | largest centered circle fully opaque in EVERY frame |
 | `crossHalfExtentPx` | max opaque |y| extent (cross-axis, travel = +X) |
 | `halfExtentPx` | max opaque distance from center |
-| `renderScale` | the precomputed scale below |
+| `renderScale` | always 1.0 — the scale is baked into the sheet |
+| `bakeScale` | provenance: authoring-space -> screen factor used by the bake |
 | `bodyColor` | redundant color channel — never load-bearing |
 
-## Render-scale rules (Law 8 / Law 2)
+## Render rules (Law 8 / Law 2) — baked at export
 
-- **hostile:** `scale = hitboxRadiusPx / inscribedRadiusPx`. At this scale
-  the opaque body covers the collision circle exactly — hostile visuals
-  never under-state the threat. Never render hostile below this scale.
-  An oversize cap (scale ≤ 2.2) is enforced at export.
-- **player:** `scale = min(1, hitboxRadiusPx / crossHalfExtentPx)` — the
-  cross-axis never overstates the hitbox; the long axis is free (elongation
+- **hostile:** baked so the centered inscribed opaque circle EQUALS the
+  collision circle (validator tolerance −0.3 px / +2.5 px, the slack coming
+  from the raster pad). The visual covers the hitbox exactly; never render
+  hostile smaller than authored.
+- **player:** baked with the cross-axis capped at the hitbox — the visual
+  never overstates the collision circle; the long axis is free (elongation
   along travel reads as motion; under-render is player-favorable).
 
-`renderScale` in the manifest is precomputed from these rules; consumers can
-either trust it or re-derive it from the published measurements. If the
-game keeps its current convention (unit quad scaled to `radius * TILE`,
-texture spanning the collision diameter), multiply that transform by
-`renderScale × cell / (2 × hitboxRadiusPx)` — or simply draw the cell at
-`cell × renderScale` px and rotate to velocity.
+Consumers draw each frame cell at `cellPx` screen px, centered on the
+projectile's sim position, rotated to the travel direction. That's the whole
+integration: no scale math at runtime.
 
 Animation timing: advance `frame = (ticks_since_spawn / rateTicks) % frames`
 from sim ticks so replays render identically; the view may interpolate

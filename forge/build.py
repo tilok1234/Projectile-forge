@@ -32,13 +32,16 @@ def build_pack() -> tuple:
         "ticksPerSecond": TICKS_PER_SECOND,
         "hostileSignature": dict(SIGNATURE),
         "renderRules": {
-            "hostile": "scale = hitboxRadiusPx / inscribedRadiusPx — the visual "
-                       "covers the collision circle exactly (Law 8); never render "
-                       "hostile below this scale",
-            "player": "scale = min(1, hitboxRadiusPx / crossHalfExtentPx) — "
-                      "cross-axis honest to the hitbox, long-axis free "
-                      "(elongation reads as motion; under-render is "
-                      "player-favorable and Law-8-benign)",
+            "baked": "sheets are HITBOX-NATIVE: each family is rasterized at "
+                     "its final on-screen size (renderScale = 1.0). Draw cells "
+                     "1:1 in the 640x360 buffer, rotated to travel — no "
+                     "runtime scaling, crisp Nearest pixels, uniform 1px rim.",
+            "hostile": "the centered inscribed opaque circle EQUALS the "
+                       "collision circle (Law 8): the visual covers the hitbox "
+                       "exactly; never render hostile smaller than authored",
+            "player": "cross-axis capped at the hitbox (Law 2; under-render "
+                      "is player-favorable), long-axis free — elongation "
+                      "reads as motion",
         },
         "families": {},
     }
@@ -52,17 +55,20 @@ def build_pack() -> tuple:
         pngs[image] = pngio.write_rgba(w, h, px)
         manifest["families"][fam.key] = {
             "role": fam.role,
+            "tier": fam.tier,
             "silhouette": fam.silhouette,
             "consumers": list(fam.consumers),
             "image": image,
             "frames": fam.frames,
             "rateTicks": fam.rate_ticks,
+            "cellPx": rendered.cell,
             "hitboxRadiusTiles": fam.hitbox_radius_tiles,
             "hitboxRadiusPx": round(fam.hitbox_radius_px, 3),
             "inscribedRadiusPx": rendered.inscribed_px,
             "crossHalfExtentPx": rendered.cross_half_px,
-            "halfExtentPx": rendered.half_extent_px,
-            "renderScale": round(rendered.render_scale, 4),
+            "halfExtentPx": round(rendered.half_extent_px, 3),
+            "renderScale": 1.0,
+            "bakeScale": round(rendered.bake_scale, 4),
             "bodyColor": "#%02X%02X%02X" % fam.body_rgb,
         }
     return manifest, sheets, pngs

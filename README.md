@@ -56,7 +56,7 @@ fails. The same checks run in CI-style tests with MUST-FAIL canaries
 |---|---|
 | `hostile-signature` | One shared hostile signature — bright 1px rim + hard bright core — on **every** hostile family, on **no** player family (docs/12 §2.6 v0; Laws 2/3). |
 | `silhouette-distinct` | Families differ by shape/pattern, never color alone (CORE-50). Declared silhouette classes are unique **and** pairwise mask overlap (IoU at in-game relative scale) stays under limits — measured, not self-described. |
-| `hitbox-cover` | Hostile visuals may never render smaller than their hitboxes (Law 8). Each family publishes its centered inscribed opaque radius; rendering at `hitboxRadiusPx / inscribedRadiusPx` covers the collision circle exactly, and an oversize cap stops comedy in the other direction. |
+| `hitbox-cover` | Hostile visuals may never render smaller than their hitboxes (Law 8). Sheets are baked **hitbox-native**: the centered inscribed opaque circle equals the collision circle (small documented slack), player cross-axis never exceeds its hitbox, and the game draws everything 1:1 — no runtime scaling, crisp pixels, uniform 1px rim. |
 | `photosensitivity` | The 9-row acceptance's ninth row: per-frame mean-luminance delta capped, loop flash rate ≤ 3 Hz at 60 ticks/s. |
 | `alpha-binary` | Alpha strictly {0, 255} — crisp Nearest-friendly pixels, exact measurements. |
 | `roster-coverage` | Every shot-firing roster entry (§3.3 weapons, §3.4 enemies, §3.5 elite phases) has a family; catalog drift fails loudly. |
@@ -72,11 +72,18 @@ Design decisions living in code rather than checks:
 - **Player shots subordinate** (Law 2): muted flat bodies, darker edges,
   cross-axis capped at the hitbox (under-rendering friendly visuals is
   player-favorable and Law-8-benign; elongation along travel is free).
+- **Hitbox-native bake.** Every family is measured (radial marching — SDF
+  center values lie on union seams) and re-rasterized at its final
+  on-screen size, so the pack needs no runtime scaling and the signature
+  rim stays exactly one pixel on every family.
 - **Color is redundant coding only.** Hostile bodies sit in a warm range,
   player in a cool muted range — but the grayscale toggle in the preview is
   the real test, and the IoU check doesn't look at color at all.
 
-## The families (v0)
+## The families
+
+**Core tier** — 1:1 with the Phase A roster; this is what the game imports
+for M-FX:
 
 | key | role | silhouette | fires it |
 |---|---|---|---|
@@ -88,6 +95,26 @@ Design decisions living in code rather than checks:
 | `fan_wedge` | hostile | wedge | Fanmaw fan; Yard Warden P1 |
 | `ring_roundel` | hostile | roundel | Ringer radial; Yard Warden P2 |
 | `warden_star` | hostile | star4 | Yard Warden P3 chase bursts (spins) |
+
+**Extended tier** — the broad vocabulary for content beyond Phase A, one
+silhouette lane per CORE-44 role-grammar pressure. The game imports ONLY
+what curation picks (the same scope guard as the actor pack — the rest
+stays in the forge):
+
+| key | role | silhouette | grammar lane |
+|---|---|---|---|
+| `comet` | hostile | comet (head leads, tail trails) | predictive-fast |
+| `crescent` | hostile | crescent, horns forward | wave |
+| `cross_plus` | hostile | cross, saltire rest pose (spins) | spinner |
+| `hex_star` | hostile | six-point star (spins) | radial-heavy |
+| `bar_sweep` | hostile | cross-axis bar | sweeper |
+| `boulder` | hostile | large disc | siege |
+| `shard` | hostile | tiny point-forward sliver | volley |
+| `twin_orb` | hostile | binary pair (counter-rotates) | paired |
+| `spark` | hostile | tiny five-point star | swarm |
+| `lance` | player | long thin lance | frame candidate |
+| `plate` | player | square slab | frame candidate |
+| `sliver` | player | tiny sliver | frame candidate |
 
 Blightcaster is deliberately absent: it fires no projectile (delayed ground
 hazard — telegraph vocabulary, which this forge does not own). Telegraph

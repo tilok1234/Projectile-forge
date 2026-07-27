@@ -13,7 +13,6 @@ import unittest
 
 from forge import validate
 from forge.build import build_pack
-from forge.families import CELL
 
 
 def _sheets_no_png(sheets):
@@ -40,8 +39,8 @@ class PackTests(unittest.TestCase):
     def test_every_frame_cell_sized(self):
         for key, fam in self.manifest["families"].items():
             w, h, _ = self.sheets[fam["image"]]
-            self.assertEqual(h, CELL, key)
-            self.assertEqual(w, CELL * fam["frames"], key)
+            self.assertEqual(h, fam["cellPx"], key)
+            self.assertEqual(w, fam["cellPx"] * fam["frames"], key)
 
     # -- canaries: each one MUST fail its row --------------------------------
 
@@ -87,7 +86,7 @@ class PackTests(unittest.TestCase):
         px = bytearray(px)
         for y in range(h):
             for x in range(w):
-                if (x // CELL) % 2 == 1:
+                if (x // fam["cellPx"]) % 2 == 1:
                     i = (y * w + x) * 4
                     if px[i + 3]:
                         px[i : i + 3] = b"\xff\xff\xff"
