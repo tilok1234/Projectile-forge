@@ -36,6 +36,7 @@ measures each shape and re-rasterizes it at final size (see render.py).
 
 from __future__ import annotations
 
+import colorsys
 import math
 from dataclasses import dataclass, field
 
@@ -62,6 +63,25 @@ RIM_RGB = (255, 243, 214)
 CORE_RGB = (255, 227, 160)
 OUTLINE_RGB = (18, 16, 14)
 PLAYER_EDGE = (62, 79, 96)
+
+# Palette discipline: every body color comes off one HSV ramp — hue is the
+# per-family (redundant) channel, saturation and value are locked per role,
+# so rim/ink/core contrast is identical across the whole set.
+HOSTILE_S, HOSTILE_V = 0.78, 0.66
+PLAYER_S = 0.20
+
+
+def _body(hue_deg: float, s: float, v: float) -> tuple:
+    r, g, b = colorsys.hsv_to_rgb((hue_deg % 360.0) / 360.0, s, v)
+    return (int(round(r * 255)), int(round(g * 255)), int(round(b * 255)))
+
+
+def hostile_body(hue_deg: float) -> tuple:
+    return _body(hue_deg, HOSTILE_S, HOSTILE_V)
+
+
+def player_body(hue_deg: float, v: float) -> tuple:
+    return _body(hue_deg, PLAYER_S, v)
 
 
 @dataclass(frozen=True)
@@ -199,73 +219,73 @@ FAMILIES: tuple = (
     # ---- core player (Law 2: subordinate; no signature) --------------------
     Family(key="longbolt", role="player", tier="core", silhouette="bolt",
            consumers=("weapon:longbolt",), hitbox_radius_tiles=0.15,
-           body_rgb=(110, 135, 160), frames=1, sdf=_longbolt),
+           body_rgb=player_body(208, 0.62), frames=1, sdf=_longbolt),
     Family(key="scattercast", role="player", tier="core", silhouette="pellet",
            consumers=("weapon:scattercast",), hitbox_radius_tiles=0.12,
-           body_rgb=(124, 148, 170), frames=1, sdf=_scattercast),
+           body_rgb=player_body(206, 0.66), frames=1, sdf=_scattercast),
     Family(key="wheelblade", role="player", tier="core", silhouette="tri-blade",
            consumers=("weapon:wheelblade",), hitbox_radius_tiles=0.20,
-           body_rgb=(138, 160, 180), frames=4, rate_ticks=8, spin_symmetry=3,
+           body_rgb=player_body(204, 0.70), frames=4, rate_ticks=8, spin_symmetry=3,
            sdf=_wheelblade),
     # ---- core hostile ------------------------------------------------------
     Family(key="husk_dart", role="hostile", tier="core", silhouette="teardrop",
            consumers=("enemy:husk_archer",), hitbox_radius_tiles=0.18,
-           body_rgb=(170, 50, 22), pulse_px=0.4, sdf=_husk_dart),
+           body_rgb=hostile_body(10), pulse_px=0.4, sdf=_husk_dart),
     Family(key="lead_needle", role="hostile", tier="core", silhouette="needle",
            consumers=("enemy:leadshot",), hitbox_radius_tiles=0.18,
-           body_rgb=(148, 30, 150), frames=1, sdf=_lead_needle),
+           body_rgb=hostile_body(298), frames=1, sdf=_lead_needle),
     Family(key="fan_wedge", role="hostile", tier="core", silhouette="wedge",
            consumers=("enemy:fanmaw", "elite:yard_warden:p1"),
-           hitbox_radius_tiles=0.20, body_rgb=(184, 100, 16), pulse_px=0.4,
+           hitbox_radius_tiles=0.20, body_rgb=hostile_body(32), pulse_px=0.4,
            sdf=_fan_wedge),
     Family(key="ring_roundel", role="hostile", tier="core", silhouette="roundel",
            consumers=("enemy:ringer", "elite:yard_warden:p2"),
-           hitbox_radius_tiles=0.20, body_rgb=(174, 24, 48), pulse_px=0.4,
+           hitbox_radius_tiles=0.20, body_rgb=hostile_body(348), pulse_px=0.4,
            pattern="rings", sdf=_ring_roundel),
     Family(key="warden_star", role="hostile", tier="core", silhouette="star4",
            consumers=("elite:yard_warden:p3",), hitbox_radius_tiles=0.20,
            # 8 frames / 11.25-degree steps: sharp points alias more per step,
            # so the slower rotation keeps luminance deltas under the cap.
-           body_rgb=(118, 46, 160), frames=8, spin_symmetry=4, sdf=_warden_star),
+           body_rgb=hostile_body(276), frames=8, spin_symmetry=4, sdf=_warden_star),
     # ---- extended hostile --------------------------------------------------
     Family(key="comet", role="hostile", tier="extended", silhouette="comet",
            consumers=("grammar:predictive-fast",), hitbox_radius_tiles=0.11,
-           body_rgb=(200, 88, 14), pulse_px=0.4, sdf=_comet),
+           body_rgb=hostile_body(24), pulse_px=0.4, sdf=_comet),
     Family(key="crescent", role="hostile", tier="extended", silhouette="crescent",
            consumers=("grammar:wave",), hitbox_radius_tiles=0.15,
-           body_rgb=(172, 20, 110), pulse_px=0.4, sdf=_crescent),
+           body_rgb=hostile_body(322), pulse_px=0.4, sdf=_crescent),
     Family(key="cross_plus", role="hostile", tier="extended", silhouette="cross",
            consumers=("grammar:spinner",), hitbox_radius_tiles=0.24,
-           body_rgb=(148, 42, 42), frames=12, rate_ticks=8, spin_symmetry=4,
+           body_rgb=hostile_body(358), frames=12, rate_ticks=8, spin_symmetry=4,
            sdf=_cross_plus),
     Family(key="hex_star", role="hostile", tier="extended", silhouette="star6",
            consumers=("grammar:radial-heavy",), hitbox_radius_tiles=0.22,
-           body_rgb=(190, 62, 20), frames=8, rate_ticks=10, spin_symmetry=6,
+           body_rgb=hostile_body(16), frames=8, rate_ticks=10, spin_symmetry=6,
            sdf=_hex_star),
     Family(key="bar_sweep", role="hostile", tier="extended", silhouette="bar",
            consumers=("grammar:sweeper",), hitbox_radius_tiles=0.20,
-           body_rgb=(136, 20, 62), pulse_px=0.4, sdf=_bar_sweep),
+           body_rgb=hostile_body(336), pulse_px=0.4, sdf=_bar_sweep),
     Family(key="meteor", role="hostile", tier="extended", silhouette="meteor",
            consumers=("grammar:siege",), hitbox_radius_tiles=0.28,
-           body_rgb=(130, 80, 34), pulse_px=0.4, sdf=_meteor),
+           body_rgb=hostile_body(38), pulse_px=0.4, sdf=_meteor),
     Family(key="shard", role="hostile", tier="extended", silhouette="shard",
            consumers=("grammar:volley",), hitbox_radius_tiles=0.08,
-           body_rgb=(200, 38, 30), frames=1, sdf=_shard),
+           body_rgb=hostile_body(2), frames=1, sdf=_shard),
     Family(key="twin_orb", role="hostile", tier="extended", silhouette="twin",
            consumers=("grammar:paired",), hitbox_radius_tiles=0.18,
-           body_rgb=(144, 38, 118), frames=8, rate_ticks=12, spin_symmetry=2,
+           body_rgb=hostile_body(310), frames=8, rate_ticks=12, spin_symmetry=2,
            sdf=_twin_orb),
     Family(key="spark", role="hostile", tier="extended", silhouette="spark",
            consumers=("grammar:swarm",), hitbox_radius_tiles=0.10,
-           body_rgb=(184, 50, 18), frames=1, sdf=_spark),
+           body_rgb=hostile_body(46), frames=1, sdf=_spark),
     # ---- extended player ---------------------------------------------------
     Family(key="lance", role="player", tier="extended", silhouette="lance",
            consumers=("reserved:frame-candidate",), hitbox_radius_tiles=0.15,
-           body_rgb=(100, 130, 150), frames=1, sdf=_lance),
+           body_rgb=player_body(210, 0.58), frames=1, sdf=_lance),
     Family(key="plate", role="player", tier="extended", silhouette="plate",
            consumers=("reserved:frame-candidate",), hitbox_radius_tiles=0.14,
-           body_rgb=(120, 140, 155), frames=1, sdf=_plate),
+           body_rgb=player_body(207, 0.60), frames=1, sdf=_plate),
     Family(key="sliver", role="player", tier="extended", silhouette="sliver",
            consumers=("reserved:frame-candidate",), hitbox_radius_tiles=0.10,
-           body_rgb=(90, 115, 135), frames=1, sdf=_sliver),
+           body_rgb=player_body(212, 0.52), frames=1, sdf=_sliver),
 )

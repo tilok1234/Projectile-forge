@@ -79,6 +79,12 @@ Design decisions living in code rather than checks:
 - **Color is redundant coding only.** Hostile bodies sit in a warm range,
   player in a cool muted range — but the grayscale toggle in the preview is
   the real test, and the IoU check doesn't look at color at all.
+- **One light, one ramp.** Every family is bevel-shaded from the same
+  top-left light via its SDF gradient, and every body color comes off one
+  HSV ramp (per-family hue; saturation/value locked per role), so
+  rim/ink/core contrast and the sense of a single artist's hand hold
+  across the whole set. The core is framed by a thin dark ring so the
+  hitbox marker reads at distance.
 
 ## The families
 

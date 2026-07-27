@@ -50,7 +50,7 @@
           "role": "hostile"
         },
         "lance": {
-          "maxLum": 0.408,
+          "maxLum": 0.425,
           "outlineFracMin": 1.0,
           "role": "player"
         },
@@ -60,7 +60,7 @@
           "role": "hostile"
         },
         "longbolt": {
-          "maxLum": 0.516,
+          "maxLum": 0.551,
           "outlineFracMin": 1.0,
           "role": "player"
         },
@@ -70,7 +70,7 @@
           "role": "hostile"
         },
         "plate": {
-          "maxLum": 0.537,
+          "maxLum": 0.535,
           "outlineFracMin": 1.0,
           "role": "player"
         },
@@ -80,7 +80,7 @@
           "role": "hostile"
         },
         "scattercast": {
-          "maxLum": 0.567,
+          "maxLum": 0.592,
           "outlineFracMin": 1.0,
           "role": "player"
         },
@@ -90,7 +90,7 @@
           "role": "hostile"
         },
         "sliver": {
-          "maxLum": 0.075,
+          "maxLum": 0.076,
           "outlineFracMin": 1.0,
           "role": "player"
         },
@@ -110,7 +110,7 @@
           "role": "hostile"
         },
         "wheelblade": {
-          "maxLum": 0.561,
+          "maxLum": 0.576,
           "outlineFracMin": 1.0,
           "role": "player"
         }
@@ -940,37 +940,37 @@
       "detail": {
         "bar_sweep": {
           "loopHz": 1.5,
-          "maxFrameLumDelta": 0.0021,
+          "maxFrameLumDelta": 0.0016,
           "pass": true
         },
         "comet": {
           "loopHz": 1.5,
-          "maxFrameLumDelta": 0.0016,
+          "maxFrameLumDelta": 0.0018,
           "pass": true
         },
         "crescent": {
           "loopHz": 1.5,
-          "maxFrameLumDelta": 0.0045,
+          "maxFrameLumDelta": 0.0047,
           "pass": true
         },
         "cross_plus": {
           "loopHz": 0.62,
-          "maxFrameLumDelta": 0.0028,
+          "maxFrameLumDelta": 0.0026,
           "pass": true
         },
         "fan_wedge": {
           "loopHz": 1.5,
-          "maxFrameLumDelta": 0.0018,
+          "maxFrameLumDelta": 0.0015,
           "pass": true
         },
         "hex_star": {
           "loopHz": 0.75,
-          "maxFrameLumDelta": 0.0008,
+          "maxFrameLumDelta": 0.0006,
           "pass": true
         },
         "husk_dart": {
           "loopHz": 1.5,
-          "maxFrameLumDelta": 0.0026,
+          "maxFrameLumDelta": 0.0029,
           "pass": true
         },
         "lance": {
@@ -990,7 +990,7 @@
         },
         "meteor": {
           "loopHz": 1.5,
-          "maxFrameLumDelta": 0.0017,
+          "maxFrameLumDelta": 0.0013,
           "pass": true
         },
         "plate": {
@@ -1000,7 +1000,7 @@
         },
         "ring_roundel": {
           "loopHz": 1.5,
-          "maxFrameLumDelta": 0.0135,
+          "maxFrameLumDelta": 0.0109,
           "pass": true
         },
         "scattercast": {
@@ -1025,7 +1025,7 @@
         },
         "twin_orb": {
           "loopHz": 0.62,
-          "maxFrameLumDelta": 0.0031,
+          "maxFrameLumDelta": 0.0032,
           "pass": true
         },
         "warden_star": {

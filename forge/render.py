@@ -37,6 +37,13 @@ _OUTLINE_W = 1.1   # screen px: near-black contour, outermost on every shot
 _RIM_W = 1.1       # screen px: the bright signature rim, inside the contour
 _BLEND = 0.9       # px: color-transition ramp width (rim->body, core->body)
 _MARGIN = 2        # px of clear space around the shape in its cell
+# One shared light for the whole set (top-left) — the bevel shading uses the
+# SDF gradient, so every family reads as lit from the same direction: the
+# single biggest "one artist made these" consistency cue.
+_LIGHT = (-0.6, -0.8)
+_BEVEL_DEPTH = 2.4  # px of shaded shoulder inside the rim
+_BEVEL_LIGHT = 0.30
+_BEVEL_DARK = 0.28
 
 
 @dataclass
@@ -137,10 +144,17 @@ def render_family(fam: Family) -> RenderedFamily:
                 if a <= 0.0:
                     continue
                 a = min(a, 1.0)
+                # bevel: lambert term from the SDF gradient vs the shared light
+                gx = sdf_screen(px + 0.5, py, spin_phase) - d
+                gy = sdf_screen(px, py + 0.5, spin_phase) - d
+                gl = math.hypot(gx, gy)
+                lam = 0.0
+                if gl > 1e-6:
+                    lam = (gx * _LIGHT[0] + gy * _LIGHT[1]) / gl
                 if fam.role == "hostile":
-                    rgb = _hostile_pixel(fam, d, px, py, core_r)
+                    rgb = _hostile_pixel(fam, d, px, py, core_r, lam)
                 else:
-                    rgb = _player_pixel(fam, d)
+                    rgb = _player_pixel(fam, d, lam)
                 i = (yy * cell + xx) * 4
                 buf[i] = rgb[0]
                 buf[i + 1] = rgb[1]
@@ -174,7 +188,18 @@ def _mix(a: tuple, b: tuple, t: float) -> tuple:
     )
 
 
-def _hostile_pixel(fam: Family, d: float, px: float, py: float, core_r: float) -> tuple:
+def _bevel(col: tuple, d: float, lam: float, strength: float) -> tuple:
+    """Shaded shoulder just inside the rim, lit by the shared light."""
+    inner = _OUTLINE_W + _RIM_W
+    w = _clamp01((d + inner + _BEVEL_DEPTH) / 1.0) * _clamp01(-(d + inner) / 1.0)
+    if w <= 0.0:
+        return col
+    if lam > 0.0:
+        return _mix(col, (255, 255, 255), _BEVEL_LIGHT * strength * w * lam)
+    return _mix(col, (10, 8, 8), _BEVEL_DARK * strength * w * -lam)
+
+
+def _hostile_pixel(fam: Family, d: float, px: float, py: float, core_r: float, lam: float) -> tuple:
     r = math.hypot(px, py)
     body = fam.body_rgb
     # soft energy glow: the body warms toward the core, so shapes read as
@@ -187,6 +212,12 @@ def _hostile_pixel(fam: Family, d: float, px: float, py: float, core_r: float) -
         mid = _mix(body, CORE_RGB, 2.0 / 3.0)
         band = _clamp01((r - 0.58 * hb) / _BLEND) * _clamp01((0.82 * hb - r) / _BLEND)
         col = _mix(col, mid, band)
+    col = _bevel(col, d, lam, 1.0)
+    # thin dark ring defines the core against the glow (the hitbox marker
+    # reads at distance, consistent with the contour language)
+    dark = (body[0] * 2 // 5, body[1] * 2 // 5, body[2] * 2 // 5)
+    ring = _clamp01((r - core_r - 0.15) / 0.5) * _clamp01((core_r + 1.05 - r) / 0.5)
+    col = _mix(col, dark, 0.45 * ring)
     # hard bright core with a soft shoulder
     col = _mix(col, CORE_RGB, _clamp01((core_r - r) / _BLEND + 1.0))
     # the bright signature rim, seated just inside the contour
@@ -196,8 +227,9 @@ def _hostile_pixel(fam: Family, d: float, px: float, py: float, core_r: float) -
     return col
 
 
-def _player_pixel(fam: Family, d: float) -> tuple:
-    return _mix(fam.body_rgb, OUTLINE_RGB, _clamp01((d + _OUTLINE_W) / 0.6 + 1.0))
+def _player_pixel(fam: Family, d: float, lam: float) -> tuple:
+    col = _bevel(fam.body_rgb, d + _RIM_W, lam, 0.6)
+    return _mix(col, OUTLINE_RGB, _clamp01((d + _OUTLINE_W) / 0.6 + 1.0))
 
 
 def _inscribed_radius(masks: list, cell: int) -> float:

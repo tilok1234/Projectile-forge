@@ -3,7 +3,7 @@
   "families": {
     "bar_sweep": {
       "bakeScale": 2.1231,
-      "bodyColor": "#88143E",
+      "bodyColor": "#A8255A",
       "cellPx": 50,
       "consumers": [
         "grammar:sweeper"
@@ -23,7 +23,7 @@
     },
     "comet": {
       "bakeScale": 1.005,
-      "bodyColor": "#C8580E",
+      "bodyColor": "#A85A25",
       "cellPx": 26,
       "consumers": [
         "grammar:predictive-fast"
@@ -43,7 +43,7 @@
     },
     "crescent": {
       "bakeScale": 1.4133,
-      "bodyColor": "#AC146E",
+      "bodyColor": "#A82578",
       "cellPx": 30,
       "consumers": [
         "grammar:wave"
@@ -63,7 +63,7 @@
     },
     "cross_plus": {
       "bakeScale": 1.636,
-      "bodyColor": "#942A2A",
+      "bodyColor": "#A82529",
       "cellPx": 48,
       "consumers": [
         "grammar:spinner"
@@ -83,7 +83,7 @@
     },
     "fan_wedge": {
       "bakeScale": 1.7806,
-      "bodyColor": "#B86410",
+      "bodyColor": "#A86B25",
       "cellPx": 44,
       "consumers": [
         "enemy:fanmaw",
@@ -104,7 +104,7 @@
     },
     "hex_star": {
       "bakeScale": 2.2341,
-      "bodyColor": "#BE3E14",
+      "bodyColor": "#A84825",
       "cellPx": 50,
       "consumers": [
         "grammar:radial-heavy"
@@ -124,7 +124,7 @@
     },
     "husk_dart": {
       "bakeScale": 1.3179,
-      "bodyColor": "#AA3216",
+      "bodyColor": "#A83B25",
       "cellPx": 38,
       "consumers": [
         "enemy:husk_archer"
@@ -144,7 +144,7 @@
     },
     "lance": {
       "bakeScale": 1.0,
-      "bodyColor": "#648296",
+      "bodyColor": "#768594",
       "cellPx": 28,
       "consumers": [
         "reserved:frame-candidate"
@@ -164,7 +164,7 @@
     },
     "lead_needle": {
       "bakeScale": 1.7886,
-      "bodyColor": "#941E96",
+      "bodyColor": "#A425A8",
       "cellPx": 52,
       "consumers": [
         "enemy:leadshot"
@@ -184,7 +184,7 @@
     },
     "longbolt": {
       "bakeScale": 1.0,
-      "bodyColor": "#6E87A0",
+      "bodyColor": "#7E8F9E",
       "cellPx": 30,
       "consumers": [
         "weapon:longbolt"
@@ -204,7 +204,7 @@
     },
     "meteor": {
       "bakeScale": 2.2259,
-      "bodyColor": "#825022",
+      "bodyColor": "#A87825",
       "cellPx": 54,
       "consumers": [
         "grammar:siege"
@@ -224,7 +224,7 @@
     },
     "plate": {
       "bakeScale": 0.9969,
-      "bodyColor": "#788C9B",
+      "bodyColor": "#7A8B99",
       "cellPx": 18,
       "consumers": [
         "reserved:frame-candidate"
@@ -244,7 +244,7 @@
     },
     "ring_roundel": {
       "bakeScale": 0.7459,
-      "bodyColor": "#AE1830",
+      "bodyColor": "#A8253F",
       "cellPx": 18,
       "consumers": [
         "enemy:ringer",
@@ -265,7 +265,7 @@
     },
     "scattercast": {
       "bakeScale": 0.8533,
-      "bodyColor": "#7C94AA",
+      "bodyColor": "#879AA8",
       "cellPx": 12,
       "consumers": [
         "weapon:scattercast"
@@ -285,7 +285,7 @@
     },
     "shard": {
       "bakeScale": 2.72,
-      "bodyColor": "#C8261E",
+      "bodyColor": "#A82925",
       "cellPx": 46,
       "consumers": [
         "grammar:volley"
@@ -305,7 +305,7 @@
     },
     "sliver": {
       "bakeScale": 1.0,
-      "bodyColor": "#5A7387",
+      "bodyColor": "#6A7685",
       "cellPx": 18,
       "consumers": [
         "reserved:frame-candidate"
@@ -325,7 +325,7 @@
     },
     "spark": {
       "bakeScale": 1.85,
-      "bodyColor": "#B83212",
+      "bodyColor": "#A88A25",
       "cellPx": 30,
       "consumers": [
         "grammar:swarm"
@@ -345,7 +345,7 @@
     },
     "twin_orb": {
       "bakeScale": 2.1774,
-      "bodyColor": "#902676",
+      "bodyColor": "#A82592",
       "cellPx": 40,
       "consumers": [
         "grammar:paired"
@@ -365,7 +365,7 @@
     },
     "warden_star": {
       "bakeScale": 2.76,
-      "bodyColor": "#762EA0",
+      "bodyColor": "#7425A8",
       "cellPx": 62,
       "consumers": [
         "elite:yard_warden:p3"
@@ -385,7 +385,7 @@
     },
     "wheelblade": {
       "bakeScale": 0.6169,
-      "bodyColor": "#8AA0B4",
+      "bodyColor": "#8FA4B2",
       "cellPx": 18,
       "consumers": [
         "weapon:wheelblade"
