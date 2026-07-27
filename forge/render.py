@@ -31,9 +31,10 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
-from .families import CORE_RGB, RIM_RGB, SIGNATURE, Family
+from .families import CORE_RGB, OUTLINE_RGB, RIM_RGB, SIGNATURE, Family
 
-_RIM_BAND = 1.05   # screen px: the signature rim band (uniform per family)
+_OUTLINE_W = 1.1   # screen px: near-black contour, outermost on every shot
+_RIM_W = 1.1       # screen px: the bright signature rim, inside the contour
 _BLEND = 0.9       # px: color-transition ramp width (rim->body, core->body)
 _MARGIN = 2        # px of clear space around the shape in its cell
 
@@ -188,17 +189,15 @@ def _hostile_pixel(fam: Family, d: float, px: float, py: float, core_r: float) -
         col = _mix(col, mid, band)
     # hard bright core with a soft shoulder
     col = _mix(col, CORE_RGB, _clamp01((core_r - r) / _BLEND + 1.0))
-    # thin dark ink line just inside the rim: definition against dark floors
-    dark = (body[0] * 2 // 5, body[1] * 2 // 5, body[2] * 2 // 5)
-    ink = _clamp01((d + 3.1) / 0.7) * _clamp01(-(d + 1.6) / 0.7)
-    col = _mix(col, dark, ink)
-    # the signature rim on top: full strength at the boundary, soft inner side
-    col = _mix(col, RIM_RGB, _clamp01((d + _RIM_BAND) / _BLEND + 1.0))
+    # the bright signature rim, seated just inside the contour
+    col = _mix(col, RIM_RGB, _clamp01((d + _OUTLINE_W + _RIM_W) / _BLEND + 1.0))
+    # near-black contour outermost: frames the rim on light AND dark floors
+    col = _mix(col, OUTLINE_RGB, _clamp01((d + _OUTLINE_W) / 0.6 + 1.0))
     return col
 
 
 def _player_pixel(fam: Family, d: float) -> tuple:
-    return _mix(fam.body_rgb, fam.edge_rgb, _clamp01((d + _RIM_BAND) / _BLEND + 1.0))
+    return _mix(fam.body_rgb, OUTLINE_RGB, _clamp01((d + _OUTLINE_W) / 0.6 + 1.0))
 
 
 def _inscribed_radius(masks: list, cell: int) -> float:

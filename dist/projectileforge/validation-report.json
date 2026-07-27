@@ -15,87 +15,107 @@
       "check": "hostile-signature",
       "detail": {
         "bar_sweep": {
-          "rimFractionMin": 1.0,
+          "outlineFracMin": 1.0,
+          "rimRingFracMin": 1.0,
           "role": "hostile"
         },
         "comet": {
-          "rimFractionMin": 1.0,
+          "outlineFracMin": 1.0,
+          "rimRingFracMin": 1.0,
           "role": "hostile"
         },
         "crescent": {
-          "rimFractionMin": 1.0,
+          "outlineFracMin": 1.0,
+          "rimRingFracMin": 1.0,
           "role": "hostile"
         },
         "cross_plus": {
-          "rimFractionMin": 1.0,
+          "outlineFracMin": 1.0,
+          "rimRingFracMin": 1.0,
           "role": "hostile"
         },
         "fan_wedge": {
-          "rimFractionMin": 1.0,
+          "outlineFracMin": 1.0,
+          "rimRingFracMin": 1.0,
           "role": "hostile"
         },
         "hex_star": {
-          "rimFractionMin": 1.0,
+          "outlineFracMin": 1.0,
+          "rimRingFracMin": 1.0,
           "role": "hostile"
         },
         "husk_dart": {
-          "rimFractionMin": 1.0,
+          "outlineFracMin": 1.0,
+          "rimRingFracMin": 1.0,
           "role": "hostile"
         },
         "lance": {
-          "edgeLumMax": 0.3,
+          "maxLum": 0.408,
+          "outlineFracMin": 1.0,
           "role": "player"
         },
         "lead_needle": {
-          "rimFractionMin": 1.0,
+          "outlineFracMin": 1.0,
+          "rimRingFracMin": 1.0,
           "role": "hostile"
         },
         "longbolt": {
-          "edgeLumMax": 0.3,
+          "maxLum": 0.516,
+          "outlineFracMin": 1.0,
           "role": "player"
         },
         "meteor": {
-          "rimFractionMin": 1.0,
+          "outlineFracMin": 1.0,
+          "rimRingFracMin": 1.0,
           "role": "hostile"
         },
         "plate": {
-          "edgeLumMax": 0.3,
+          "maxLum": 0.537,
+          "outlineFracMin": 1.0,
           "role": "player"
         },
         "ring_roundel": {
-          "rimFractionMin": 1.0,
+          "outlineFracMin": 1.0,
+          "rimRingFracMin": 1.0,
           "role": "hostile"
         },
         "scattercast": {
-          "edgeLumMax": 0.3,
+          "maxLum": 0.567,
+          "outlineFracMin": 1.0,
           "role": "player"
         },
         "shard": {
-          "rimFractionMin": 1.0,
+          "outlineFracMin": 1.0,
+          "rimRingFracMin": 1.0,
           "role": "hostile"
         },
         "sliver": {
-          "edgeLumMax": 0.3,
+          "maxLum": 0.075,
+          "outlineFracMin": 1.0,
           "role": "player"
         },
         "spark": {
-          "rimFractionMin": 1.0,
+          "outlineFracMin": 1.0,
+          "rimRingFracMin": 1.0,
           "role": "hostile"
         },
         "twin_orb": {
-          "rimFractionMin": 1.0,
+          "outlineFracMin": 1.0,
+          "rimRingFracMin": 1.0,
           "role": "hostile"
         },
         "warden_star": {
-          "rimFractionMin": 1.0,
+          "outlineFracMin": 1.0,
+          "rimRingFracMin": 1.0,
           "role": "hostile"
         },
         "wheelblade": {
-          "edgeLumMax": 0.3,
+          "maxLum": 0.561,
+          "outlineFracMin": 1.0,
           "role": "player"
         }
       },
-      "law": "\u00a72.6 / Laws 2+3",
+      "law": "\u00a72.6 + contour / Laws 2+3",
       "pass": true
     },
     {
@@ -925,17 +945,17 @@
         },
         "comet": {
           "loopHz": 1.5,
-          "maxFrameLumDelta": 0.0017,
+          "maxFrameLumDelta": 0.0016,
           "pass": true
         },
         "crescent": {
           "loopHz": 1.5,
-          "maxFrameLumDelta": 0.0044,
+          "maxFrameLumDelta": 0.0045,
           "pass": true
         },
         "cross_plus": {
           "loopHz": 0.62,
-          "maxFrameLumDelta": 0.0007,
+          "maxFrameLumDelta": 0.0028,
           "pass": true
         },
         "fan_wedge": {
@@ -945,7 +965,7 @@
         },
         "hex_star": {
           "loopHz": 0.75,
-          "maxFrameLumDelta": 0.0002,
+          "maxFrameLumDelta": 0.0008,
           "pass": true
         },
         "husk_dart": {
@@ -970,7 +990,7 @@
         },
         "meteor": {
           "loopHz": 1.5,
-          "maxFrameLumDelta": 0.0018,
+          "maxFrameLumDelta": 0.0017,
           "pass": true
         },
         "plate": {
@@ -980,7 +1000,7 @@
         },
         "ring_roundel": {
           "loopHz": 1.5,
-          "maxFrameLumDelta": 0.0138,
+          "maxFrameLumDelta": 0.0135,
           "pass": true
         },
         "scattercast": {
@@ -1005,12 +1025,12 @@
         },
         "twin_orb": {
           "loopHz": 0.62,
-          "maxFrameLumDelta": 0.0012,
+          "maxFrameLumDelta": 0.0031,
           "pass": true
         },
         "warden_star": {
           "loopHz": 0.75,
-          "maxFrameLumDelta": 0.0008,
+          "maxFrameLumDelta": 0.0025,
           "pass": true
         },
         "wheelblade": {

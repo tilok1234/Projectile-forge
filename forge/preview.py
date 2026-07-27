@@ -99,7 +99,9 @@ _TEMPLATE = """<!doctype html>
   .hostile { background:#4a1d1d; color:#ffb3a0; }
   .player  { background:#1d2f4a; color:#a0c8ff; }
   .meta { color:#8a9299; font-size:12px; margin:4px 0 8px; }
-  img.sheet, canvas { image-rendering:pixelated; background:#101214;
+  #wrap { --floor:#a8a196; }
+  #floorToggle:checked ~ #wrap { --floor:#101214; }
+  img.sheet, canvas { image-rendering:pixelated; background:var(--floor);
                       border-radius:4px; display:block; }
   img.sheet { max-width:100%; height:auto; }
   .row { display:flex; gap:10px; align-items:flex-end; margin-top:8px; }
@@ -118,7 +120,9 @@ _TEMPLATE = """<!doctype html>
 </head>
 <body>
 <h1>Projectile Forge — pack preview</h1>
-<p class="note">Quiet dark floor, Nearest scaling. Sheets are
+<p class="note">Light stone floor by default (toggle the dark floor to
+audit both — the black contour + bright rim signature must read on either).
+Nearest scaling. Sheets are
 <b>hitbox-native</b>: every family is baked at its final on-screen size
 (hostile: the inscribed circle equals the collision circle; player:
 cross-axis capped at the hitbox) and the game draws them 1:1 — what you see
@@ -130,6 +134,8 @@ scripts are allowed; the sheet strips are the full content.)</span></p>
 <div class="toggles">
 <input type="checkbox" id="grayToggle">
 <label for="grayToggle">grayscale (colorblind / Law 3 audit)</label>
+<input type="checkbox" id="floorToggle">
+<label for="floorToggle">dark floor</label>
 <input type="checkbox" id="pauseToggle" hidden>
 <label for="pauseToggle" id="freezelbl">freeze animation</label>
 <div id="wrap">

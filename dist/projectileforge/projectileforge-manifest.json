@@ -409,8 +409,10 @@
   "hostileSignature": {
     "coreColor": "#FFE3A0",
     "coreRadiusFrac": 0.42,
+    "outlineColor": "#12100E",
+    "outlineWidthPx": 1.1,
     "rimColor": "#FFF3D6",
-    "rimWidthPx": 1.0
+    "rimWidthPx": 1.1
   },
   "orientation": "+x",
   "renderRules": {

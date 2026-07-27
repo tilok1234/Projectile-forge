@@ -10,8 +10,11 @@ Rows (mapped to the binding constraints):
                         only hugging the outer boundary (within 2px of fully
                         transparent); interiors are fully opaque — smooth
                         edges can never decay into mushy translucent sprites
-* hostile-signature   — §2.6: every hostile silhouette edge wears the bright
-                        rim; NO player edge is bright (Law 2/3)
+* hostile-signature   — §2.6 + contour: EVERY shot's boundary is the
+                        near-black outline (readable on light and dark
+                        floors); hostile shots carry the bright rim just
+                        inside it; NO player pixel is ever rim-bright
+                        (Law 2/3)
 * silhouette-distinct — Law 3 / CORE-50: declared silhouette classes unique,
                         AND measured pairwise mask overlap (IoU at final
                         on-screen size — sheets are hitbox-native) under
@@ -28,6 +31,8 @@ Rows (mapped to the binding constraints):
 
 from __future__ import annotations
 
+import math
+
 from .families import TICKS_PER_SECOND
 
 # Hostile families must separate from EACH OTHER by naked silhouette — shape
@@ -36,9 +41,12 @@ IOU_MAX_HOSTILE_PAIR = 0.55
 # Hostile-vs-player discrimination is carried by the shared signature (§2.6);
 # the silhouette check on these pairs is only a guard rail.
 IOU_MAX_CROSS_ROLE_PAIR = 0.75
-RIM_LUM_MIN = 0.80          # hostile boundary pixels must be at least this bright
-RIM_FRACTION_MIN = 0.85     # ...for at least this fraction of the boundary
-FRIENDLY_EDGE_LUM_MAX = 0.75
+OUTLINE_LUM_MAX = 0.25      # boundary pixels must be at most this bright...
+OUTLINE_FRACTION_MIN = 0.90  # ...for at least this fraction of the boundary
+RIM_LUM_MIN = 0.80          # hostile: rays from the hitbox center must cross
+RIM_RAY_COUNT = 72          # a rim-bright pixel — the rim is a bright ring
+RIM_RAY_FRACTION_MIN = 0.95  # around the threat center, whatever the shape
+PLAYER_LUM_MAX = 0.78       # player shots have NO rim-bright pixel anywhere
 COVER_TOL = 0.3             # px: baked inscribed-vs-hitbox equality tolerance
 COVER_SLACK = 2.5           # px: inscribed may exceed the hitbox by at most this (bake pad + raster)
 LUM_DELTA_MAX = 0.02        # mean-luminance step between consecutive frames
@@ -184,23 +192,51 @@ def validate_pack(manifest: dict, sheets: dict) -> dict:
     ok = True
     for key, d in data.items():
         role = d["meta"]["role"]
-        worst = 1.0 if role == "hostile" else 0.0
+        cell = d["cell"]
+        outline_worst = 1.0
+        rim_worst = 1.0
+        lum_max = 0.0
         for frame, mask in zip(d["frames"], d["masks"]):
-            edge = _boundary(mask, d["cell"])
-            lums = [_lum(*frame[i][:3]) for i in edge]
+            edge = _boundary(mask, cell)
+            dark = sum(
+                1 for i in edge if _lum(*frame[i][:3]) <= OUTLINE_LUM_MAX
+            )
+            outline_worst = min(outline_worst, dark / len(edge))
             if role == "hostile":
-                frac = sum(1 for v in lums if v >= RIM_LUM_MIN) / len(lums)
-                worst = min(worst, frac)
+                c = cell / 2.0
+                hits = 0
+                for k in range(RIM_RAY_COUNT):
+                    ang = 2.0 * math.pi * k / RIM_RAY_COUNT
+                    ca, sa = math.cos(ang), math.sin(ang)
+                    rr = 0.5
+                    found = False
+                    while rr <= c:
+                        x = int(c + ca * rr)
+                        y = int(c + sa * rr)
+                        if 0 <= x < cell and 0 <= y < cell:
+                            p = frame[y * cell + x]
+                            if p[3] >= 128 and _lum(*p[:3]) >= RIM_LUM_MIN:
+                                found = True
+                                break
+                        rr += 0.5
+                    hits += found
+                rim_worst = min(rim_worst, hits / RIM_RAY_COUNT)
             else:
-                worst = max(worst, max(lums))
+                for p in frame:
+                    if p[3]:
+                        lum_max = max(lum_max, _lum(*p[:3]))
+        entry = {"role": role, "outlineFracMin": round(outline_worst, 3)}
+        good = outline_worst >= OUTLINE_FRACTION_MIN
         if role == "hostile":
-            sig[key] = {"role": role, "rimFractionMin": round(worst, 3)}
-            ok = ok and worst >= RIM_FRACTION_MIN
+            entry["rimRingFracMin"] = round(rim_worst, 3)
+            good = good and rim_worst >= RIM_RAY_FRACTION_MIN
         else:
-            sig[key] = {"role": role, "edgeLumMax": round(worst, 3)}
-            ok = ok and worst <= FRIENDLY_EDGE_LUM_MAX
+            entry["maxLum"] = round(lum_max, 3)
+            good = good and lum_max <= PLAYER_LUM_MAX
+        sig[key] = entry
+        ok = ok and good
     rows.append({
-        "check": "hostile-signature", "law": "§2.6 / Laws 2+3",
+        "check": "hostile-signature", "law": "§2.6 + contour / Laws 2+3",
         "pass": ok, "detail": sig,
     })
 

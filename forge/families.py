@@ -44,10 +44,15 @@ from . import shapes
 CELL = 32              # authoring space: px per tile (CORE-20)
 TICKS_PER_SECOND = 60  # game sim rate — flash-rate math uses this
 
-# The shared hostile signature (docs/12 §2.6, v0): bright 1px rim + hard core.
-# One signature across every hostile family; absent from every player family.
+# The shared hostile signature (docs/12 §2.6 v0 rim+core, extended with a
+# black contour): every shot wears a near-black 1px outline — the frame that
+# keeps shots readable on light AND dark floors — and hostile shots
+# additionally carry the bright rim just inside it plus the hard core.
+# No player family may carry the rim or core.
 SIGNATURE = {
-    "rimWidthPx": 1.0,
+    "outlineWidthPx": 1.1,
+    "outlineColor": "#12100E",
+    "rimWidthPx": 1.1,
     "rimColor": "#FFF3D6",
     "coreColor": "#FFE3A0",
     "coreRadiusFrac": 0.42,  # of the hitbox radius (the core marks the hit circle)
@@ -55,6 +60,7 @@ SIGNATURE = {
 
 RIM_RGB = (255, 243, 214)
 CORE_RGB = (255, 227, 160)
+OUTLINE_RGB = (18, 16, 14)
 PLAYER_EDGE = (62, 79, 96)
 
 
