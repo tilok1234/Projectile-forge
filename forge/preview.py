@@ -141,9 +141,12 @@ scripts are allowed; the sheet strips are the full content.)</span></p>
 <div id="wrap">
 __SECTIONS__
 <div id="stresswrap">
-<h2>Stress field (Law 2 at density)</h2>
-<p class="note">Deterministic (no RNG): player spam underneath, hostile fire
-over it — hostile must stay legible above all of it.</p>
+<h2>Live range (Law 2 in motion)</h2>
+<p class="note">A deterministic firing-range demo (no RNG; demo patterns, not
+game data): emplacements cycle through the hostile families — aimed shots,
+fans, radials, spirals, volleys — at a strafing player marker that fires
+back. Shots fly real trajectories, rotate to travel, and draw in the game's
+order: player fire under hostile fire.</p>
 <canvas id="stress" width="640" height="360"></canvas>
 </div>
 </div>
@@ -187,27 +190,113 @@ function drawCards(tick) {
     drawShot(c.ctx, c.fam, tick, s / 2, s / 2, 0);
   }
 }
-// Deterministic stress field: phases are pure functions of the emitter index
-// (mirrors the game's authored-pattern rule).
-function stressField(ctx, tick) {
+// ---- Live range: a deterministic firing-range sim (no RNG anywhere) ----
+// Speeds are tiles/s converted to px/tick at 32 px/tile, 60 t/s. Volley
+// angles are authored offsets, CORE-32 style. Demo patterns, not game data.
+const PX = 32 / 60;
+const byKey = Object.fromEntries(fams.map(f => [f.key, f]));
+const VOLLEYS = {
+  husk_dart:   { cd: 90,  spd: 7.0,  angles: [0] },
+  lead_needle: { cd: 120, spd: 9.5,  angles: [0] },
+  fan_wedge:   { cd: 150, spd: 6.0,  angles: [-30, -15, 0, 15, 30] },
+  ring_roundel:{ cd: 180, spd: 5.0,  radial: 12 },
+  warden_star: { cd: 110, spd: 4.5,  radial: 4, spin: 0.35 },
+  comet:       { cd: 70,  spd: 11.0, angles: [0] },
+  crescent:    { cd: 130, spd: 5.5,  angles: [-20, 0, 20] },
+  cross_plus:  { cd: 160, spd: 3.5,  angles: [-10, 10] },
+  hex_star:    { cd: 200, spd: 4.0,  radial: 6, spin: 0.15 },
+  bar_sweep:   { cd: 140, spd: 4.5,  angles: [0] },
+  meteor:      { cd: 220, spd: 2.8,  angles: [0] },
+  shard:       { cd: 100, spd: 9.0,  angles: [-18, -6, 6, 18] },
+  twin_orb:    { cd: 150, spd: 5.0,  parallel: 9 },
+  spark:       { cd: 90,  spd: 6.5,  radial: 8 },
+};
+const EMITTERS = [
+  { x: 70, y: 60 }, { x: 570, y: 60 }, { x: 70, y: 300 },
+  { x: 570, y: 300 }, { x: 320, y: 36 }, { x: 320, y: 324 },
+  { x: 36, y: 180 }, { x: 604, y: 180 },
+];
+const hostileKeys = Object.keys(VOLLEYS).filter(k => byKey[k]);
+const shots = [];
+function playerPos(t) {
+  return { x: 320 + 150 * Math.sin(t * 0.011), y: 180 + 92 * Math.sin(t * 0.017 + 1.3) };
+}
+function spawn(fam, x, y, ang, spd, ttl) {
+  if (shots.length >= 400) return;
+  shots.push({ fam, x, y, vx: Math.cos(ang) * spd * PX, vy: Math.sin(ang) * spd * PX,
+               born: tick, ttl });
+}
+function fireVolley(key, ex, ey, t) {
+  const v = VOLLEYS[key];
+  const fam = byKey[key];
+  const p = playerPos(t);
+  const aim = Math.atan2(p.y - ey, p.x - ex);
+  if (v.radial) {
+    const base = (v.spin || 0) * t * 0.1;
+    for (let i = 0; i < v.radial; i++)
+      spawn(fam, ex, ey, base + i * 2 * Math.PI / v.radial, v.spd, 300);
+  } else if (v.parallel) {
+    const nx = -Math.sin(aim), ny = Math.cos(aim);
+    spawn(fam, ex + nx * v.parallel, ey + ny * v.parallel, aim, v.spd, 300);
+    spawn(fam, ex - nx * v.parallel, ey - ny * v.parallel, aim, v.spd, 300);
+  } else {
+    for (const a of v.angles)
+      spawn(fam, ex, ey, aim + a * Math.PI / 180, v.spd, 300);
+  }
+}
+function stepRange(t) {
+  const p = playerPos(t);
+  // emplacements cycle families every 4 s so every lane gets stage time
+  EMITTERS.forEach((e, i) => {
+    const key = hostileKeys[(i + Math.floor(t / 240)) % hostileKeys.length];
+    if (t % VOLLEYS[key].cd === (i * 37) % VOLLEYS[key].cd) fireVolley(key, e.x, e.y, t);
+  });
+  // the player marker fires back at the nearest emplacement
+  let best = EMITTERS[0], bd = 1e9;
+  for (const e of EMITTERS) {
+    const d = (e.x - p.x) ** 2 + (e.y - p.y) ** 2;
+    if (d < bd) { bd = d; best = e; }
+  }
+  const aim = Math.atan2(best.y - p.y, best.x - p.x);
+  if (t % 15 === 0 && byKey.longbolt) spawn(byKey.longbolt, p.x, p.y, aim, 14, 28);
+  if (t % 30 === 7 && byKey.scattercast)
+    for (const a of [-25, -12.5, 0, 12.5, 25])
+      spawn(byKey.scattercast, p.x, p.y, aim + a * Math.PI / 180, 11, 22);
+  if (t % 48 === 11 && byKey.wheelblade) spawn(byKey.wheelblade, p.x, p.y, aim, 8, 90);
+  for (let i = shots.length - 1; i >= 0; i--) {
+    const s = shots[i];
+    const age = t - s.born;
+    if (s.fam.key === 'wheelblade' && age === 45) { s.vx = -s.vx; s.vy = -s.vy; }
+    s.x += s.vx; s.y += s.vy;
+    if (age > s.ttl || s.x < -40 || s.x > 680 || s.y < -40 || s.y > 400) shots.splice(i, 1);
+  }
+}
+function drawRange(ctx, t) {
   ctx.clearRect(0, 0, 640, 360);
-  const hostiles = fams.filter(f => f.role === 'hostile');
-  const players = fams.filter(f => f.role === 'player');
-  for (let i = 0; i < 90; i++) {
-    const fam = players[i % players.length];
-    const a = (i * 2.399963) % (Math.PI * 2);
-    const r = 30 + ((i * 53) % 130) + ((tick * 2.2 + i * 17) % 160);
-    drawShot(ctx, fam, tick + i * 3,
-             320 + Math.cos(a) * r, 180 + Math.sin(a) * r * 0.56, a);
+  const p = playerPos(t);
+  // emplacement posts
+  for (const e of EMITTERS) {
+    ctx.fillStyle = '#12100e';
+    ctx.fillRect(e.x - 7, e.y - 7, 14, 14);
+    ctx.fillStyle = '#4a4238';
+    ctx.fillRect(e.x - 5, e.y - 5, 10, 10);
   }
-  for (let i = 0; i < 56; i++) {
-    const fam = hostiles[i % hostiles.length];
-    const a = i * 0.7 + tick * 0.012;
-    const r = 40 + ((i * 37) % 110) + 34 * Math.sin(tick * 0.02 + i);
-    drawShot(ctx, fam, tick + i * 5,
-             320 + Math.cos(a) * r, 180 + Math.sin(a) * r * 0.56,
-             a + Math.PI / 2);
-  }
+  // player marker
+  ctx.beginPath();
+  ctx.arc(p.x, p.y, 7, 0, 2 * Math.PI);
+  ctx.fillStyle = '#12100e';
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(p.x, p.y, 5.2, 0, 2 * Math.PI);
+  ctx.fillStyle = '#7c94aa';
+  ctx.fill();
+  // Law 2 order: player shots under hostile shots
+  for (const s of shots)
+    if (s.fam.role === 'player')
+      drawShot(ctx, s.fam, t - s.born, s.x, s.y, Math.atan2(s.vy, s.vx));
+  for (const s of shots)
+    if (s.fam.role === 'hostile')
+      drawShot(ctx, s.fam, t - s.born, s.x, s.y, Math.atan2(s.vy, s.vx));
 }
 const stress = document.getElementById('stress').getContext('2d');
 let tick = 0, last = 0;
@@ -216,13 +305,16 @@ function loop(now) {
     last = now;
     tick++;
     drawCards(tick);
-    stressField(stress, tick);
+    stepRange(tick);
+    drawRange(stress, tick);
   }
   requestAnimationFrame(loop);
 }
 function start() {
   drawCards(0);
-  stressField(stress, 0);
+  // pre-roll so the range opens mid-action instead of empty
+  for (let i = 0; i < 240; i++) { tick++; stepRange(tick); }
+  drawRange(stress, tick);
   requestAnimationFrame(loop);
 }
 if (fams.every(f => f.img.complete)) start();
