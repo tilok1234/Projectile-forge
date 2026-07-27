@@ -1,0 +1,157 @@
+{
+  "cell": 32,
+  "families": {
+    "fan_wedge": {
+      "bodyColor": "#965414",
+      "consumers": [
+        "enemy:fanmaw",
+        "elite:yard_warden:p1"
+      ],
+      "crossHalfExtentPx": 8.0,
+      "frames": 4,
+      "halfExtentPx": 11.106601717798213,
+      "hitboxRadiusPx": 6.4,
+      "hitboxRadiusTiles": 0.2,
+      "image": "fan_wedge.png",
+      "inscribedRadiusPx": 3.5,
+      "rateTicks": 10,
+      "renderScale": 1.8286,
+      "role": "hostile",
+      "silhouette": "wedge"
+    },
+    "husk_dart": {
+      "bodyColor": "#8C2C1A",
+      "consumers": [
+        "enemy:husk_archer"
+      ],
+      "crossHalfExtentPx": 8.0,
+      "frames": 4,
+      "halfExtentPx": 13.247548783981962,
+      "hitboxRadiusPx": 5.76,
+      "hitboxRadiusTiles": 0.18,
+      "image": "husk_dart.png",
+      "inscribedRadiusPx": 4.0,
+      "rateTicks": 10,
+      "renderScale": 1.44,
+      "role": "hostile",
+      "silhouette": "teardrop"
+    },
+    "lead_needle": {
+      "bodyColor": "#7A1E7A",
+      "consumers": [
+        "enemy:leadshot"
+      ],
+      "crossHalfExtentPx": 3.0,
+      "frames": 1,
+      "halfExtentPx": 11.01189802081432,
+      "hitboxRadiusPx": 5.76,
+      "hitboxRadiusTiles": 0.18,
+      "image": "lead_needle.png",
+      "inscribedRadiusPx": 2.75,
+      "rateTicks": 10,
+      "renderScale": 2.0945,
+      "role": "hostile",
+      "silhouette": "needle"
+    },
+    "longbolt": {
+      "bodyColor": "#6E87A0",
+      "consumers": [
+        "weapon:longbolt"
+      ],
+      "crossHalfExtentPx": 3.0,
+      "frames": 1,
+      "halfExtentPx": 13.009996003196804,
+      "hitboxRadiusPx": 4.8,
+      "hitboxRadiusTiles": 0.15,
+      "image": "longbolt.png",
+      "inscribedRadiusPx": 3.0,
+      "rateTicks": 10,
+      "renderScale": 1.0,
+      "role": "player",
+      "silhouette": "bolt"
+    },
+    "ring_roundel": {
+      "bodyColor": "#941A2C",
+      "consumers": [
+        "enemy:ringer",
+        "elite:yard_warden:p2"
+      ],
+      "crossHalfExtentPx": 9.0,
+      "frames": 4,
+      "halfExtentPx": 9.692388155425117,
+      "hitboxRadiusPx": 6.4,
+      "hitboxRadiusTiles": 0.2,
+      "image": "ring_roundel.png",
+      "inscribedRadiusPx": 8.5,
+      "rateTicks": 10,
+      "renderScale": 0.7529,
+      "role": "hostile",
+      "silhouette": "roundel"
+    },
+    "scattercast": {
+      "bodyColor": "#7C94AA",
+      "consumers": [
+        "weapon:scattercast"
+      ],
+      "crossHalfExtentPx": 5.0,
+      "frames": 1,
+      "halfExtentPx": 5.027692569068709,
+      "hitboxRadiusPx": 3.84,
+      "hitboxRadiusTiles": 0.12,
+      "image": "scattercast.png",
+      "inscribedRadiusPx": 4.0,
+      "rateTicks": 10,
+      "renderScale": 0.768,
+      "role": "player",
+      "silhouette": "pellet"
+    },
+    "warden_star": {
+      "bodyColor": "#602880",
+      "consumers": [
+        "elite:yard_warden:p3"
+      ],
+      "crossHalfExtentPx": 11.0,
+      "frames": 6,
+      "halfExtentPx": 11.477249200050075,
+      "hitboxRadiusPx": 6.4,
+      "hitboxRadiusTiles": 0.2,
+      "image": "warden_star.png",
+      "inscribedRadiusPx": 4.0,
+      "rateTicks": 10,
+      "renderScale": 1.6,
+      "role": "hostile",
+      "silhouette": "star4"
+    },
+    "wheelblade": {
+      "bodyColor": "#8AA0B4",
+      "consumers": [
+        "weapon:wheelblade"
+      ],
+      "crossHalfExtentPx": 9.0,
+      "frames": 4,
+      "halfExtentPx": 9.24642784226795,
+      "hitboxRadiusPx": 6.4,
+      "hitboxRadiusTiles": 0.2,
+      "image": "wheelblade.png",
+      "inscribedRadiusPx": 3.0,
+      "rateTicks": 8,
+      "renderScale": 0.7111,
+      "role": "player",
+      "silhouette": "tri-blade"
+    }
+  },
+  "formatVersion": 1,
+  "generator": "projectile-forge 0.1.0",
+  "hostileSignature": {
+    "coreColor": "#FFE3A0",
+    "coreRadiusFrac": 0.42,
+    "rimColor": "#FFF3D6",
+    "rimWidthPx": 1.0
+  },
+  "orientation": "+x",
+  "renderRules": {
+    "hostile": "scale = hitboxRadiusPx / inscribedRadiusPx \u2014 the visual covers the collision circle exactly (Law 8); never render hostile below this scale",
+    "player": "scale = min(1, hitboxRadiusPx / crossHalfExtentPx) \u2014 cross-axis honest to the hitbox, long-axis free (elongation reads as motion; under-render is player-favorable and Law-8-benign)"
+  },
+  "ticksPerSecond": 60
+}

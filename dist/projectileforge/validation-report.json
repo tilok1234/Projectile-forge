@@ -1,0 +1,264 @@
+{
+  "formatVersion": 1,
+  "generator": "projectile-forge 0.1.0",
+  "pass": true,
+  "rows": [
+    {
+      "check": "alpha-binary",
+      "detail": {
+        "nonBinaryAlpha": []
+      },
+      "law": "pixel hygiene",
+      "pass": true
+    },
+    {
+      "check": "hostile-signature",
+      "detail": {
+        "fan_wedge": {
+          "rimFractionMin": 1.0,
+          "role": "hostile"
+        },
+        "husk_dart": {
+          "rimFractionMin": 1.0,
+          "role": "hostile"
+        },
+        "lead_needle": {
+          "rimFractionMin": 1.0,
+          "role": "hostile"
+        },
+        "longbolt": {
+          "edgeLumMax": 0.3,
+          "role": "player"
+        },
+        "ring_roundel": {
+          "rimFractionMin": 1.0,
+          "role": "hostile"
+        },
+        "scattercast": {
+          "edgeLumMax": 0.3,
+          "role": "player"
+        },
+        "warden_star": {
+          "rimFractionMin": 1.0,
+          "role": "hostile"
+        },
+        "wheelblade": {
+          "edgeLumMax": 0.3,
+          "role": "player"
+        }
+      },
+      "law": "\u00a72.6 / Laws 2+3",
+      "pass": true
+    },
+    {
+      "check": "silhouette-distinct",
+      "detail": {
+        "classesUnique": true,
+        "pairIoU": {
+          "fan_wedge~husk_dart": {
+            "iou": 0.35,
+            "limit": 0.55
+          },
+          "fan_wedge~lead_needle": {
+            "iou": 0.479,
+            "limit": 0.55
+          },
+          "fan_wedge~longbolt": {
+            "iou": 0.285,
+            "limit": 0.75
+          },
+          "fan_wedge~ring_roundel": {
+            "iou": 0.317,
+            "limit": 0.55
+          },
+          "fan_wedge~scattercast": {
+            "iou": 0.081,
+            "limit": 0.75
+          },
+          "fan_wedge~warden_star": {
+            "iou": 0.466,
+            "limit": 0.55
+          },
+          "fan_wedge~wheelblade": {
+            "iou": 0.106,
+            "limit": 0.75
+          },
+          "husk_dart~lead_needle": {
+            "iou": 0.451,
+            "limit": 0.55
+          },
+          "husk_dart~longbolt": {
+            "iou": 0.288,
+            "limit": 0.75
+          },
+          "husk_dart~ring_roundel": {
+            "iou": 0.347,
+            "limit": 0.55
+          },
+          "husk_dart~scattercast": {
+            "iou": 0.09,
+            "limit": 0.75
+          },
+          "husk_dart~warden_star": {
+            "iou": 0.437,
+            "limit": 0.55
+          },
+          "husk_dart~wheelblade": {
+            "iou": 0.118,
+            "limit": 0.75
+          },
+          "lead_needle~longbolt": {
+            "iou": 0.417,
+            "limit": 0.75
+          },
+          "lead_needle~ring_roundel": {
+            "iou": 0.398,
+            "limit": 0.55
+          },
+          "lead_needle~scattercast": {
+            "iou": 0.119,
+            "limit": 0.75
+          },
+          "lead_needle~warden_star": {
+            "iou": 0.524,
+            "limit": 0.55
+          },
+          "lead_needle~wheelblade": {
+            "iou": 0.155,
+            "limit": 0.75
+          },
+          "longbolt~ring_roundel": {
+            "iou": 0.396,
+            "limit": 0.75
+          },
+          "longbolt~warden_star": {
+            "iou": 0.333,
+            "limit": 0.75
+          },
+          "ring_roundel~scattercast": {
+            "iou": 0.256,
+            "limit": 0.75
+          },
+          "ring_roundel~warden_star": {
+            "iou": 0.371,
+            "limit": 0.55
+          },
+          "ring_roundel~wheelblade": {
+            "iou": 0.333,
+            "limit": 0.75
+          },
+          "scattercast~warden_star": {
+            "iou": 0.095,
+            "limit": 0.75
+          },
+          "warden_star~wheelblade": {
+            "iou": 0.124,
+            "limit": 0.75
+          }
+        }
+      },
+      "law": "Law 3 / CORE-50",
+      "pass": true
+    },
+    {
+      "check": "hitbox-cover",
+      "detail": {
+        "fan_wedge": {
+          "hitboxRadiusPx": 6.4,
+          "inscribedRadiusPx": 3.5,
+          "pass": true,
+          "renderScale": 1.8286
+        },
+        "husk_dart": {
+          "hitboxRadiusPx": 5.76,
+          "inscribedRadiusPx": 4.0,
+          "pass": true,
+          "renderScale": 1.44
+        },
+        "lead_needle": {
+          "hitboxRadiusPx": 5.76,
+          "inscribedRadiusPx": 2.75,
+          "pass": true,
+          "renderScale": 2.0945
+        },
+        "ring_roundel": {
+          "hitboxRadiusPx": 6.4,
+          "inscribedRadiusPx": 8.5,
+          "pass": true,
+          "renderScale": 0.7529
+        },
+        "warden_star": {
+          "hitboxRadiusPx": 6.4,
+          "inscribedRadiusPx": 4.0,
+          "pass": true,
+          "renderScale": 1.6
+        }
+      },
+      "law": "Law 8",
+      "pass": true
+    },
+    {
+      "check": "photosensitivity",
+      "detail": {
+        "fan_wedge": {
+          "loopHz": 1.5,
+          "maxFrameLumDelta": 0.0041,
+          "pass": true
+        },
+        "husk_dart": {
+          "loopHz": 1.5,
+          "maxFrameLumDelta": 0.0051,
+          "pass": true
+        },
+        "lead_needle": {
+          "loopHz": 0.0,
+          "maxFrameLumDelta": 0.0,
+          "pass": true
+        },
+        "longbolt": {
+          "loopHz": 0.0,
+          "maxFrameLumDelta": 0.0,
+          "pass": true
+        },
+        "ring_roundel": {
+          "loopHz": 1.5,
+          "maxFrameLumDelta": 0.0134,
+          "pass": true
+        },
+        "scattercast": {
+          "loopHz": 0.0,
+          "maxFrameLumDelta": 0.0,
+          "pass": true
+        },
+        "warden_star": {
+          "loopHz": 1.0,
+          "maxFrameLumDelta": 0.0057,
+          "pass": true
+        },
+        "wheelblade": {
+          "loopHz": 1.88,
+          "maxFrameLumDelta": 0.0,
+          "pass": true
+        }
+      },
+      "law": "9-row acceptance, row 9",
+      "pass": true
+    },
+    {
+      "check": "roster-coverage",
+      "detail": {
+        "missing": []
+      },
+      "law": "SPEC-A \u00a73.3/\u00a73.4/\u00a73.5",
+      "pass": true
+    },
+    {
+      "check": "determinism",
+      "detail": {
+        "doubleBuildIdentical": true
+      },
+      "law": "reproducible build artifact",
+      "pass": true
+    }
+  ]
+}
