@@ -15,7 +15,10 @@ Lookup material for writing an importer against `dist/projectileforge/`.
 
 Single-loop-row layout (the same convention the retired spriteforge pack
 used for projectiles): frames left-to-right in one row, transparent
-background, RGBA8, alpha strictly {0, 255}. Intended for Nearest filtering.
+background, RGBA8. Edges carry a one-pixel analytic anti-aliasing fringe;
+interiors are fully opaque (the `alpha-hygiene` check enforces that partial
+alpha exists only within 2px of fully transparent). Silhouette measurements
+use the half-coverage contour (alpha >= 128).
 
 Cells are **per-family and hitbox-native** (`families.<key>.cellPx`): each
 family is rasterized at its final on-screen size, `renderScale` is always
@@ -83,7 +86,7 @@ position but frame selection stays tick-pure.
 ## validation-report.json
 
 `pass` (the verdict) + `rows[]`, one row per check
-(`alpha-binary`, `hostile-signature`, `silhouette-distinct`, `hitbox-cover`,
+(`alpha-hygiene`, `hostile-signature`, `silhouette-distinct`, `hitbox-cover`,
 `photosensitivity`, `roster-coverage`, `determinism`), each with `law`,
 `pass`, and measured `detail`. Thresholds live in `forge/validate.py`:
 

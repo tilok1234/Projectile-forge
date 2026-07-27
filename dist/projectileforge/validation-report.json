@@ -4,11 +4,11 @@
   "pass": true,
   "rows": [
     {
-      "check": "alpha-binary",
+      "check": "alpha-hygiene",
       "detail": {
-        "nonBinaryAlpha": []
+        "interiorPartialAlpha": []
       },
-      "law": "pixel hygiene",
+      "law": "pixel hygiene (edge-only AA)",
       "pass": true
     },
     {
@@ -104,87 +104,87 @@
         "classesUnique": true,
         "pairIoU": {
           "bar_sweep~boulder": {
-            "iou": 0.346,
+            "iou": 0.332,
             "limit": 0.55
           },
           "bar_sweep~comet": {
-            "iou": 0.18,
+            "iou": 0.169,
             "limit": 0.55
           },
           "bar_sweep~crescent": {
-            "iou": 0.488,
+            "iou": 0.434,
             "limit": 0.55
           },
           "bar_sweep~cross_plus": {
-            "iou": 0.333,
+            "iou": 0.291,
             "limit": 0.55
           },
           "bar_sweep~fan_wedge": {
-            "iou": 0.244,
+            "iou": 0.223,
             "limit": 0.55
           },
           "bar_sweep~hex_star": {
-            "iou": 0.367,
+            "iou": 0.352,
             "limit": 0.55
           },
           "bar_sweep~husk_dart": {
-            "iou": 0.235,
+            "iou": 0.219,
             "limit": 0.55
           },
           "bar_sweep~lance": {
-            "iou": 0.056,
+            "iou": 0.057,
             "limit": 0.75
           },
           "bar_sweep~lead_needle": {
-            "iou": 0.178,
+            "iou": 0.17,
             "limit": 0.55
           },
           "bar_sweep~longbolt": {
-            "iou": 0.107,
+            "iou": 0.069,
             "limit": 0.75
           },
           "bar_sweep~plate": {
-            "iou": 0.113,
+            "iou": 0.084,
             "limit": 0.75
           },
           "bar_sweep~ring_roundel": {
-            "iou": 0.211,
+            "iou": 0.229,
             "limit": 0.55
           },
           "bar_sweep~scattercast": {
-            "iou": 0.061,
+            "iou": 0.068,
             "limit": 0.75
           },
           "bar_sweep~shard": {
-            "iou": 0.112,
+            "iou": 0.106,
             "limit": 0.55
           },
           "bar_sweep~sliver": {
-            "iou": 0.028,
+            "iou": 0.031,
             "limit": 0.75
           },
           "bar_sweep~spark": {
-            "iou": 0.192,
+            "iou": 0.191,
             "limit": 0.55
           },
           "bar_sweep~twin_orb": {
-            "iou": 0.367,
+            "iou": 0.341,
             "limit": 0.55
           },
           "bar_sweep~warden_star": {
-            "iou": 0.348,
+            "iou": 0.311,
             "limit": 0.55
           },
           "bar_sweep~wheelblade": {
-            "iou": 0.04,
+            "iou": 0.045,
             "limit": 0.75
           },
           "boulder~comet": {
-            "iou": 0.523,
+            "iou": 0.513,
             "limit": 0.55
           },
           "boulder~crescent": {
-            "iou": 0.311,
+            "iou": 0.312,
             "limit": 0.55
           },
           "boulder~cross_plus": {
@@ -192,19 +192,19 @@
             "limit": 0.55
           },
           "boulder~fan_wedge": {
-            "iou": 0.524,
+            "iou": 0.523,
             "limit": 0.55
           },
           "boulder~hex_star": {
-            "iou": 0.489,
+            "iou": 0.492,
             "limit": 0.55
           },
           "boulder~husk_dart": {
-            "iou": 0.5,
+            "iou": 0.496,
             "limit": 0.55
           },
           "boulder~lance": {
-            "iou": 0.149,
+            "iou": 0.138,
             "limit": 0.75
           },
           "boulder~lead_needle": {
@@ -212,11 +212,11 @@
             "limit": 0.55
           },
           "boulder~longbolt": {
-            "iou": 0.33,
+            "iou": 0.227,
             "limit": 0.75
           },
           "boulder~plate": {
-            "iou": 0.255,
+            "iou": 0.17,
             "limit": 0.75
           },
           "boulder~ring_roundel": {
@@ -228,7 +228,7 @@
             "limit": 0.75
           },
           "boulder~shard": {
-            "iou": 0.304,
+            "iou": 0.311,
             "limit": 0.55
           },
           "boulder~sliver": {
@@ -236,7 +236,7 @@
             "limit": 0.75
           },
           "boulder~spark": {
-            "iou": 0.429,
+            "iou": 0.414,
             "limit": 0.55
           },
           "boulder~twin_orb": {
@@ -252,91 +252,91 @@
             "limit": 0.75
           },
           "comet~crescent": {
-            "iou": 0.172,
+            "iou": 0.168,
             "limit": 0.55
           },
           "comet~cross_plus": {
-            "iou": 0.29,
+            "iou": 0.283,
             "limit": 0.55
           },
           "comet~fan_wedge": {
-            "iou": 0.452,
+            "iou": 0.442,
             "limit": 0.55
           },
           "comet~hex_star": {
-            "iou": 0.275,
+            "iou": 0.271,
             "limit": 0.55
           },
           "comet~husk_dart": {
-            "iou": 0.374,
+            "iou": 0.373,
             "limit": 0.55
           },
           "comet~lance": {
-            "iou": 0.25,
+            "iou": 0.236,
             "limit": 0.75
           },
           "comet~lead_needle": {
-            "iou": 0.498,
+            "iou": 0.495,
             "limit": 0.55
           },
           "comet~longbolt": {
-            "iou": 0.596,
+            "iou": 0.441,
             "limit": 0.75
           },
           "comet~plate": {
-            "iou": 0.416,
+            "iou": 0.291,
             "limit": 0.75
           },
           "comet~ring_roundel": {
-            "iou": 0.53,
+            "iou": 0.527,
             "limit": 0.55
           },
           "comet~scattercast": {
-            "iou": 0.232,
+            "iou": 0.236,
             "limit": 0.75
           },
           "comet~shard": {
-            "iou": 0.429,
+            "iou": 0.451,
             "limit": 0.55
           },
           "comet~sliver": {
-            "iou": 0.107,
+            "iou": 0.109,
             "limit": 0.75
           },
           "comet~spark": {
-            "iou": 0.443,
+            "iou": 0.418,
             "limit": 0.55
           },
           "comet~twin_orb": {
-            "iou": 0.306,
+            "iou": 0.301,
             "limit": 0.55
           },
           "comet~warden_star": {
-            "iou": 0.277,
+            "iou": 0.272,
             "limit": 0.55
           },
           "comet~wheelblade": {
-            "iou": 0.152,
+            "iou": 0.155,
             "limit": 0.75
           },
           "crescent~cross_plus": {
-            "iou": 0.472,
+            "iou": 0.473,
             "limit": 0.55
           },
           "crescent~fan_wedge": {
-            "iou": 0.306,
+            "iou": 0.308,
             "limit": 0.55
           },
           "crescent~hex_star": {
-            "iou": 0.43,
+            "iou": 0.428,
             "limit": 0.55
           },
           "crescent~husk_dart": {
-            "iou": 0.39,
+            "iou": 0.389,
             "limit": 0.55
           },
           "crescent~lance": {
-            "iou": 0.046,
+            "iou": 0.045,
             "limit": 0.75
           },
           "crescent~lead_needle": {
@@ -344,59 +344,59 @@
             "limit": 0.55
           },
           "crescent~longbolt": {
-            "iou": 0.105,
+            "iou": 0.072,
             "limit": 0.75
           },
           "crescent~plate": {
-            "iou": 0.085,
+            "iou": 0.057,
             "limit": 0.75
           },
           "crescent~ring_roundel": {
-            "iou": 0.16,
+            "iou": 0.162,
             "limit": 0.55
           },
           "crescent~scattercast": {
-            "iou": 0.046,
+            "iou": 0.047,
             "limit": 0.75
           },
           "crescent~shard": {
-            "iou": 0.201,
+            "iou": 0.189,
             "limit": 0.55
           },
           "crescent~sliver": {
-            "iou": 0.021,
+            "iou": 0.022,
             "limit": 0.75
           },
           "crescent~spark": {
-            "iou": 0.16,
+            "iou": 0.156,
             "limit": 0.55
           },
           "crescent~twin_orb": {
-            "iou": 0.504,
+            "iou": 0.505,
             "limit": 0.55
           },
           "crescent~warden_star": {
-            "iou": 0.38,
+            "iou": 0.382,
             "limit": 0.55
           },
           "crescent~wheelblade": {
-            "iou": 0.03,
+            "iou": 0.031,
             "limit": 0.75
           },
           "cross_plus~fan_wedge": {
-            "iou": 0.536,
+            "iou": 0.535,
             "limit": 0.55
           },
           "cross_plus~hex_star": {
-            "iou": 0.491,
+            "iou": 0.493,
             "limit": 0.55
           },
           "cross_plus~husk_dart": {
-            "iou": 0.467,
+            "iou": 0.464,
             "limit": 0.55
           },
           "cross_plus~lance": {
-            "iou": 0.078,
+            "iou": 0.079,
             "limit": 0.75
           },
           "cross_plus~lead_needle": {
@@ -404,11 +404,11 @@
             "limit": 0.55
           },
           "cross_plus~longbolt": {
-            "iou": 0.17,
+            "iou": 0.107,
             "limit": 0.75
           },
           "cross_plus~plate": {
-            "iou": 0.159,
+            "iou": 0.106,
             "limit": 0.75
           },
           "cross_plus~ring_roundel": {
@@ -420,7 +420,7 @@
             "limit": 0.75
           },
           "cross_plus~shard": {
-            "iou": 0.183,
+            "iou": 0.185,
             "limit": 0.55
           },
           "cross_plus~sliver": {
@@ -428,7 +428,7 @@
             "limit": 0.75
           },
           "cross_plus~spark": {
-            "iou": 0.272,
+            "iou": 0.267,
             "limit": 0.55
           },
           "cross_plus~twin_orb": {
@@ -444,7 +444,7 @@
             "limit": 0.75
           },
           "fan_wedge~hex_star": {
-            "iou": 0.429,
+            "iou": 0.43,
             "limit": 0.55
           },
           "fan_wedge~husk_dart": {
@@ -452,31 +452,31 @@
             "limit": 0.55
           },
           "fan_wedge~lance": {
-            "iou": 0.113,
+            "iou": 0.104,
             "limit": 0.75
           },
           "fan_wedge~lead_needle": {
-            "iou": 0.492,
+            "iou": 0.49,
             "limit": 0.55
           },
           "fan_wedge~longbolt": {
-            "iou": 0.282,
+            "iou": 0.201,
             "limit": 0.75
           },
           "fan_wedge~plate": {
-            "iou": 0.194,
+            "iou": 0.129,
             "limit": 0.75
           },
           "fan_wedge~ring_roundel": {
-            "iou": 0.363,
+            "iou": 0.361,
             "limit": 0.55
           },
           "fan_wedge~scattercast": {
-            "iou": 0.105,
+            "iou": 0.104,
             "limit": 0.75
           },
           "fan_wedge~shard": {
-            "iou": 0.326,
+            "iou": 0.327,
             "limit": 0.55
           },
           "fan_wedge~sliver": {
@@ -484,19 +484,19 @@
             "limit": 0.75
           },
           "fan_wedge~spark": {
-            "iou": 0.319,
+            "iou": 0.307,
             "limit": 0.55
           },
           "fan_wedge~twin_orb": {
-            "iou": 0.497,
+            "iou": 0.496,
             "limit": 0.55
           },
           "fan_wedge~warden_star": {
-            "iou": 0.378,
+            "iou": 0.377,
             "limit": 0.55
           },
           "fan_wedge~wheelblade": {
-            "iou": 0.069,
+            "iou": 0.068,
             "limit": 0.75
           },
           "hex_star~husk_dart": {
@@ -508,19 +508,19 @@
             "limit": 0.75
           },
           "hex_star~lead_needle": {
-            "iou": 0.284,
+            "iou": 0.285,
             "limit": 0.55
           },
           "hex_star~longbolt": {
-            "iou": 0.164,
+            "iou": 0.108,
             "limit": 0.75
           },
           "hex_star~plate": {
-            "iou": 0.14,
+            "iou": 0.094,
             "limit": 0.75
           },
           "hex_star~ring_roundel": {
-            "iou": 0.263,
+            "iou": 0.265,
             "limit": 0.55
           },
           "hex_star~scattercast": {
@@ -536,15 +536,15 @@
             "limit": 0.75
           },
           "hex_star~spark": {
-            "iou": 0.252,
+            "iou": 0.245,
             "limit": 0.55
           },
           "hex_star~twin_orb": {
-            "iou": 0.498,
+            "iou": 0.497,
             "limit": 0.55
           },
           "hex_star~warden_star": {
-            "iou": 0.403,
+            "iou": 0.405,
             "limit": 0.55
           },
           "hex_star~wheelblade": {
@@ -552,31 +552,31 @@
             "limit": 0.75
           },
           "husk_dart~lance": {
-            "iou": 0.124,
+            "iou": 0.116,
             "limit": 0.75
           },
           "husk_dart~lead_needle": {
-            "iou": 0.473,
+            "iou": 0.475,
             "limit": 0.55
           },
           "husk_dart~longbolt": {
-            "iou": 0.281,
+            "iou": 0.201,
             "limit": 0.75
           },
           "husk_dart~plate": {
-            "iou": 0.212,
+            "iou": 0.142,
             "limit": 0.75
           },
           "husk_dart~ring_roundel": {
-            "iou": 0.38,
+            "iou": 0.382,
             "limit": 0.55
           },
           "husk_dart~scattercast": {
-            "iou": 0.115,
+            "iou": 0.116,
             "limit": 0.75
           },
           "husk_dart~shard": {
-            "iou": 0.486,
+            "iou": 0.477,
             "limit": 0.55
           },
           "husk_dart~sliver": {
@@ -584,27 +584,27 @@
             "limit": 0.75
           },
           "husk_dart~spark": {
-            "iou": 0.321,
+            "iou": 0.307,
             "limit": 0.55
           },
           "husk_dart~twin_orb": {
-            "iou": 0.426,
+            "iou": 0.424,
             "limit": 0.55
           },
           "husk_dart~warden_star": {
-            "iou": 0.371,
+            "iou": 0.37,
             "limit": 0.55
           },
           "husk_dart~wheelblade": {
-            "iou": 0.075,
+            "iou": 0.076,
             "limit": 0.75
           },
           "lance~lead_needle": {
-            "iou": 0.133,
+            "iou": 0.124,
             "limit": 0.75
           },
           "lance~ring_roundel": {
-            "iou": 0.255,
+            "iou": 0.261,
             "limit": 0.75
           },
           "lance~shard": {
@@ -612,23 +612,23 @@
             "limit": 0.75
           },
           "lance~spark": {
-            "iou": 0.194,
+            "iou": 0.204,
             "limit": 0.75
           },
           "lance~twin_orb": {
-            "iou": 0.079,
+            "iou": 0.074,
             "limit": 0.75
           },
           "lance~warden_star": {
-            "iou": 0.085,
+            "iou": 0.079,
             "limit": 0.75
           },
           "lead_needle~longbolt": {
-            "iou": 0.333,
+            "iou": 0.238,
             "limit": 0.75
           },
           "lead_needle~plate": {
-            "iou": 0.229,
+            "iou": 0.152,
             "limit": 0.75
           },
           "lead_needle~ring_roundel": {
@@ -640,7 +640,7 @@
             "limit": 0.75
           },
           "lead_needle~shard": {
-            "iou": 0.533,
+            "iou": 0.516,
             "limit": 0.55
           },
           "lead_needle~sliver": {
@@ -648,7 +648,7 @@
             "limit": 0.75
           },
           "lead_needle~spark": {
-            "iou": 0.326,
+            "iou": 0.307,
             "limit": 0.55
           },
           "lead_needle~twin_orb": {
@@ -664,43 +664,43 @@
             "limit": 0.75
           },
           "longbolt~ring_roundel": {
-            "iou": 0.379,
+            "iou": 0.273,
             "limit": 0.75
           },
           "longbolt~shard": {
-            "iou": 0.486,
+            "iou": 0.391,
             "limit": 0.75
           },
           "longbolt~spark": {
-            "iou": 0.32,
+            "iou": 0.214,
             "limit": 0.75
           },
           "longbolt~twin_orb": {
-            "iou": 0.198,
+            "iou": 0.142,
             "limit": 0.75
           },
           "longbolt~warden_star": {
-            "iou": 0.176,
+            "iou": 0.128,
             "limit": 0.75
           },
           "plate~ring_roundel": {
-            "iou": 0.533,
+            "iou": 0.356,
             "limit": 0.75
           },
           "plate~shard": {
-            "iou": 0.232,
+            "iou": 0.212,
             "limit": 0.75
           },
           "plate~spark": {
-            "iou": 0.459,
+            "iou": 0.319,
             "limit": 0.75
           },
           "plate~twin_orb": {
-            "iou": 0.136,
+            "iou": 0.091,
             "limit": 0.75
           },
           "plate~warden_star": {
-            "iou": 0.145,
+            "iou": 0.097,
             "limit": 0.75
           },
           "ring_roundel~scattercast": {
@@ -708,7 +708,7 @@
             "limit": 0.75
           },
           "ring_roundel~shard": {
-            "iou": 0.288,
+            "iou": 0.305,
             "limit": 0.55
           },
           "ring_roundel~sliver": {
@@ -716,7 +716,7 @@
             "limit": 0.75
           },
           "ring_roundel~spark": {
-            "iou": 0.529,
+            "iou": 0.504,
             "limit": 0.55
           },
           "ring_roundel~twin_orb": {
@@ -732,11 +732,11 @@
             "limit": 0.75
           },
           "scattercast~shard": {
-            "iou": 0.171,
+            "iou": 0.185,
             "limit": 0.75
           },
           "scattercast~spark": {
-            "iou": 0.274,
+            "iou": 0.283,
             "limit": 0.75
           },
           "scattercast~twin_orb": {
@@ -748,11 +748,11 @@
             "limit": 0.75
           },
           "shard~sliver": {
-            "iou": 0.087,
+            "iou": 0.094,
             "limit": 0.75
           },
           "shard~spark": {
-            "iou": 0.27,
+            "iou": 0.268,
             "limit": 0.55
           },
           "shard~twin_orb": {
@@ -760,15 +760,15 @@
             "limit": 0.55
           },
           "shard~warden_star": {
-            "iou": 0.212,
+            "iou": 0.213,
             "limit": 0.55
           },
           "shard~wheelblade": {
-            "iou": 0.111,
+            "iou": 0.12,
             "limit": 0.75
           },
           "sliver~spark": {
-            "iou": 0.126,
+            "iou": 0.13,
             "limit": 0.75
           },
           "sliver~twin_orb": {
@@ -780,15 +780,15 @@
             "limit": 0.75
           },
           "spark~twin_orb": {
-            "iou": 0.246,
+            "iou": 0.238,
             "limit": 0.55
           },
           "spark~warden_star": {
-            "iou": 0.245,
+            "iou": 0.236,
             "limit": 0.55
           },
           "spark~wheelblade": {
-            "iou": 0.179,
+            "iou": 0.172,
             "limit": 0.75
           },
           "twin_orb~warden_star": {
@@ -813,7 +813,7 @@
       "detail": {
         "bar_sweep": {
           "hitboxRadiusPx": 6.4,
-          "inscribedRadiusPx": 8.0,
+          "inscribedRadiusPx": 7.0,
           "pass": true
         },
         "boulder": {
@@ -823,7 +823,7 @@
         },
         "comet": {
           "hitboxRadiusPx": 3.84,
-          "inscribedRadiusPx": 5.0,
+          "inscribedRadiusPx": 4.25,
           "pass": true
         },
         "crescent": {
@@ -843,7 +843,7 @@
         },
         "hex_star": {
           "hitboxRadiusPx": 7.68,
-          "inscribedRadiusPx": 8.25,
+          "inscribedRadiusPx": 8.0,
           "pass": true
         },
         "husk_dart": {
@@ -862,12 +862,12 @@
           "pass": true
         },
         "longbolt": {
-          "crossHalfExtentPx": 3.0,
+          "crossHalfExtentPx": 2.0,
           "hitboxRadiusPx": 4.8,
           "pass": true
         },
         "plate": {
-          "crossHalfExtentPx": 5.0,
+          "crossHalfExtentPx": 4.0,
           "hitboxRadiusPx": 4.48,
           "pass": true
         },
@@ -893,7 +893,7 @@
         },
         "spark": {
           "hitboxRadiusPx": 3.2,
-          "inscribedRadiusPx": 4.0,
+          "inscribedRadiusPx": 3.5,
           "pass": true
         },
         "twin_orb": {
@@ -920,42 +920,42 @@
       "detail": {
         "bar_sweep": {
           "loopHz": 1.5,
-          "maxFrameLumDelta": 0.0015,
+          "maxFrameLumDelta": 0.0017,
           "pass": true
         },
         "boulder": {
           "loopHz": 1.5,
-          "maxFrameLumDelta": 0.0072,
+          "maxFrameLumDelta": 0.0116,
           "pass": true
         },
         "comet": {
           "loopHz": 1.5,
-          "maxFrameLumDelta": 0.0038,
+          "maxFrameLumDelta": 0.0024,
           "pass": true
         },
         "crescent": {
           "loopHz": 1.5,
-          "maxFrameLumDelta": 0.0026,
+          "maxFrameLumDelta": 0.0029,
           "pass": true
         },
         "cross_plus": {
           "loopHz": 0.62,
-          "maxFrameLumDelta": 0.008,
+          "maxFrameLumDelta": 0.0024,
           "pass": true
         },
         "fan_wedge": {
           "loopHz": 1.5,
-          "maxFrameLumDelta": 0.002,
+          "maxFrameLumDelta": 0.0022,
           "pass": true
         },
         "hex_star": {
           "loopHz": 0.75,
-          "maxFrameLumDelta": 0.0027,
+          "maxFrameLumDelta": 0.0002,
           "pass": true
         },
         "husk_dart": {
           "loopHz": 1.5,
-          "maxFrameLumDelta": 0.0029,
+          "maxFrameLumDelta": 0.0028,
           "pass": true
         },
         "lance": {
@@ -980,7 +980,7 @@
         },
         "ring_roundel": {
           "loopHz": 1.5,
-          "maxFrameLumDelta": 0.0137,
+          "maxFrameLumDelta": 0.0151,
           "pass": true
         },
         "scattercast": {
@@ -1005,12 +1005,12 @@
         },
         "twin_orb": {
           "loopHz": 0.62,
-          "maxFrameLumDelta": 0.0069,
+          "maxFrameLumDelta": 0.0005,
           "pass": true
         },
         "warden_star": {
           "loopHz": 0.75,
-          "maxFrameLumDelta": 0.0039,
+          "maxFrameLumDelta": 0.0007,
           "pass": true
         },
         "wheelblade": {

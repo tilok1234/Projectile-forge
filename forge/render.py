@@ -19,8 +19,11 @@ Treatments:
   every hostile family.
 * player — flat muted body with a darker edge. No rim, no core (Law 2).
 
-Alpha is strictly {0, 255} (coverage-thresholded, 4x4 supersampled): crisp
-Nearest-friendly pixels, exact validator measurements.
+Edges are analytically anti-aliased from the SDF (alpha = clamp(0.5 - d)):
+a one-pixel smooth fringe at the silhouette boundary, fully opaque interior.
+Color transitions (rim -> body -> core, ring bands) blend over sub-pixel
+ramps instead of hard bands. The validator enforces the shape of this
+smoothness: partial alpha may exist ONLY hugging the outer boundary.
 """
 
 from __future__ import annotations
@@ -30,8 +33,8 @@ from dataclasses import dataclass
 
 from .families import CORE_RGB, RIM_RGB, SIGNATURE, Family
 
-_SS = 4            # supersamples per axis
 _RIM_BAND = 1.05   # screen px: the signature rim band (uniform per family)
+_BLEND = 0.9       # px: color-transition ramp width (rim->body, core->body)
 _MARGIN = 2        # px of clear space around the shape in its cell
 
 
@@ -129,10 +132,11 @@ def render_family(fam: Family) -> RenderedFamily:
             for xx in range(cell):
                 px = xx + 0.5 - c
                 py = yy + 0.5 - c
-                cov = _coverage(sdf_screen, spin_phase, px, py)
-                if cov < 0.5:
-                    continue
                 d = sdf_screen(px, py, spin_phase)
+                a = 0.5 - d  # analytic 1px edge AA
+                if a <= 0.0:
+                    continue
+                a = min(a, 1.0)
                 if fam.role == "hostile":
                     rgb = _hostile_pixel(fam, d, px, py, core_r)
                 else:
@@ -141,8 +145,9 @@ def render_family(fam: Family) -> RenderedFamily:
                 buf[i] = rgb[0]
                 buf[i + 1] = rgb[1]
                 buf[i + 2] = rgb[2]
-                buf[i + 3] = 255
-                mask[yy * cell + xx] = 1
+                buf[i + 3] = int(round(a * 255.0))
+                if a >= 0.5:
+                    mask[yy * cell + xx] = 1
         frames_rgba.append(bytes(buf))
         masks.append(mask)
     return RenderedFamily(
@@ -157,40 +162,36 @@ def render_family(fam: Family) -> RenderedFamily:
     )
 
 
-def _coverage(sdf, phase: float, px: float, py: float) -> float:
-    hits = 0
-    for sy in range(_SS):
-        for sx in range(_SS):
-            x = px + (sx + 0.5) / _SS - 0.5
-            y = py + (sy + 0.5) / _SS - 0.5
-            if sdf(x, y, phase) < 0.0:
-                hits += 1
-    return hits / (_SS * _SS)
+def _clamp01(t: float) -> float:
+    return 0.0 if t < 0.0 else (1.0 if t > 1.0 else t)
+
+
+def _mix(a: tuple, b: tuple, t: float) -> tuple:
+    return (
+        int(round(a[0] + (b[0] - a[0]) * t)),
+        int(round(a[1] + (b[1] - a[1]) * t)),
+        int(round(a[2] + (b[2] - a[2]) * t)),
+    )
 
 
 def _hostile_pixel(fam: Family, d: float, px: float, py: float, core_r: float) -> tuple:
-    if d >= -_RIM_BAND:
-        return RIM_RGB
     r = math.hypot(px, py)
-    if r <= core_r:
-        return CORE_RGB
+    col = fam.body_rgb
     if fam.pattern == "rings":
         # Painted INSIDE a solid silhouette, never cut out of it (Law 8).
         hb = fam.hitbox_radius_px
-        if 0.58 * hb <= r <= 0.82 * hb:
-            b = fam.body_rgb
-            return (
-                b[0] + (CORE_RGB[0] - b[0]) * 2 // 3,
-                b[1] + (CORE_RGB[1] - b[1]) * 2 // 3,
-                b[2] + (CORE_RGB[2] - b[2]) * 2 // 3,
-            )
-    return fam.body_rgb
+        mid = _mix(fam.body_rgb, CORE_RGB, 2.0 / 3.0)
+        band = _clamp01((r - 0.58 * hb) / _BLEND) * _clamp01((0.82 * hb - r) / _BLEND)
+        col = _mix(col, mid, band)
+    # hard bright core with a soft shoulder
+    col = _mix(col, CORE_RGB, _clamp01((core_r - r) / _BLEND + 1.0))
+    # the signature rim on top: full strength at the boundary, soft inner side
+    col = _mix(col, RIM_RGB, _clamp01((d + _RIM_BAND) / _BLEND + 1.0))
+    return col
 
 
 def _player_pixel(fam: Family, d: float) -> tuple:
-    if d >= -_RIM_BAND:
-        return fam.edge_rgb
-    return fam.body_rgb
+    return _mix(fam.body_rgb, fam.edge_rgb, _clamp01((d + _RIM_BAND) / _BLEND + 1.0))
 
 
 def _inscribed_radius(masks: list, cell: int) -> float:

@@ -94,16 +94,19 @@ class PackTests(unittest.TestCase):
         report = validate.validate_pack(manifest, sheets)
         self.assertFalse(self._row(report, "photosensitivity")["pass"])
 
-    def test_canary_soft_alpha_fails(self):
+    def test_canary_interior_partial_alpha_fails(self):
+        # Half-transparent pixel at the CENTER of a big solid family: AA is
+        # legal only hugging the outer boundary, so this must fail.
         manifest = copy.deepcopy(self.manifest)
         sheets = _sheets_no_png(self.sheets)
-        fam = manifest["families"]["longbolt"]
+        fam = manifest["families"]["boulder"]
         w, h, px = sheets[fam["image"]]
         px = bytearray(px)
-        px[(15 * w + 15) * 4 + 3] = 128
+        cell = fam["cellPx"]
+        px[((cell // 2) * w + cell // 2) * 4 + 3] = 128
         sheets[fam["image"]] = (w, h, bytes(px))
         report = validate.validate_pack(manifest, sheets)
-        self.assertFalse(self._row(report, "alpha-binary")["pass"])
+        self.assertFalse(self._row(report, "alpha-hygiene")["pass"])
 
     def test_canary_roster_hole_fails(self):
         manifest = copy.deepcopy(self.manifest)

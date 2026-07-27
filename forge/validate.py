@@ -6,7 +6,10 @@ check row lands in validation-report.json with measured values — acceptance
 is a record, not a vibe.
 
 Rows (mapped to the binding constraints):
-* alpha-binary        — crisp Nearest-friendly pixels; alpha strictly {0,255}
+* alpha-hygiene       — anti-aliasing is edge-only: partial alpha may exist
+                        only hugging the outer boundary (within 2px of fully
+                        transparent); interiors are fully opaque — smooth
+                        edges can never decay into mushy translucent sprites
 * hostile-signature   — §2.6: every hostile silhouette edge wears the bright
                         rim; NO player edge is bright (Law 2/3)
 * silhouette-distinct — Law 3 / CORE-50: declared silhouette classes unique,
@@ -67,7 +70,8 @@ def _frames_of(sheet: tuple, frames: int, cell: int) -> list:
 
 
 def _mask(frame: list) -> list:
-    return [1 if p[3] == 255 else 0 for p in frame]
+    """Silhouette mask at the half-coverage contour (alpha >= 128)."""
+    return [1 if p[3] >= 128 else 0 for p in frame]
 
 
 def _boundary(mask: list, cell: int) -> list:
@@ -88,7 +92,7 @@ def _mean_lum(frame: list, cell: int) -> float:
     total = 0.0
     for r, g, b, a in frame:
         if a:
-            total += _lum(r, g, b)
+            total += _lum(r, g, b) * (a / 255.0)
     return total / (cell * cell)
 
 
@@ -135,16 +139,44 @@ def validate_pack(manifest: dict, sheets: dict) -> dict:
             "masks": [_mask(f) for f in frames],
         }
 
-    # -- alpha-binary --------------------------------------------------------
+    # -- alpha-hygiene -------------------------------------------------------
+    # Every partially transparent pixel must sit within Chebyshev distance 2
+    # of a fully transparent pixel: AA lives at the silhouette edge only, and
+    # interiors stay fully opaque.
     bad = []
     for key, d in data.items():
+        cell = d["cell"]
+        offender = False
         for frame in d["frames"]:
-            if any(p[3] not in (0, 255) for p in frame):
-                bad.append(key)
+            for y in range(cell):
+                for x in range(cell):
+                    a = frame[y * cell + x][3]
+                    if a == 0 or a == 255:
+                        continue
+                    near_clear = False
+                    for dy in range(-2, 3):
+                        for dx in range(-2, 3):
+                            nx, ny = x + dx, y + dy
+                            if nx < 0 or ny < 0 or nx >= cell or ny >= cell:
+                                near_clear = True
+                                break
+                            if frame[ny * cell + nx][3] == 0:
+                                near_clear = True
+                                break
+                        if near_clear:
+                            break
+                    if not near_clear:
+                        offender = True
+                        break
+                if offender:
+                    break
+            if offender:
                 break
+        if offender:
+            bad.append(key)
     rows.append({
-        "check": "alpha-binary", "law": "pixel hygiene",
-        "pass": not bad, "detail": {"nonBinaryAlpha": bad},
+        "check": "alpha-hygiene", "law": "pixel hygiene (edge-only AA)",
+        "pass": not bad, "detail": {"interiorPartialAlpha": bad},
     })
 
     # -- hostile-signature ---------------------------------------------------

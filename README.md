@@ -58,7 +58,7 @@ fails. The same checks run in CI-style tests with MUST-FAIL canaries
 | `silhouette-distinct` | Families differ by shape/pattern, never color alone (CORE-50). Declared silhouette classes are unique **and** pairwise mask overlap (IoU at in-game relative scale) stays under limits — measured, not self-described. |
 | `hitbox-cover` | Hostile visuals may never render smaller than their hitboxes (Law 8). Sheets are baked **hitbox-native**: the centered inscribed opaque circle equals the collision circle (small documented slack), player cross-axis never exceeds its hitbox, and the game draws everything 1:1 — no runtime scaling, crisp pixels, uniform 1px rim. |
 | `photosensitivity` | The 9-row acceptance's ninth row: per-frame mean-luminance delta capped, loop flash rate ≤ 3 Hz at 60 ticks/s. |
-| `alpha-binary` | Alpha strictly {0, 255} — crisp Nearest-friendly pixels, exact measurements. |
+| `alpha-hygiene` | Anti-aliasing is edge-only: a 1px analytic AA fringe at the silhouette boundary, fully opaque interiors — smooth edges that can never decay into mushy translucent sprites. |
 | `roster-coverage` | Every shot-firing roster entry (§3.3 weapons, §3.4 enemies, §3.5 elite phases) has a family; catalog drift fails loudly. |
 | `determinism` | Double-build byte-identity. |
 
