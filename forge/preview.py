@@ -41,6 +41,7 @@ def build_preview(manifest: dict, pngs: dict) -> str:
             "frames": fam["frames"],
             "rateTicks": fam["rateTicks"],
             "cellPx": fam["cellPx"],
+            "silhouette": fam["silhouette"],
         }
         sections[(fam["role"], fam["tier"])].append(_card(key, fam, uri))
     payload = json.dumps(
@@ -141,12 +142,19 @@ scripts are allowed; the sheet strips are the full content.)</span></p>
 <div id="wrap">
 __SECTIONS__
 <div id="stresswrap">
-<h2>Live range (Law 2 in motion)</h2>
-<p class="note">A deterministic firing-range demo (no RNG; demo patterns, not
-game data): emplacements cycle through the hostile families — aimed shots,
-fans, radials, spirals, volleys — at a strafing player marker that fires
-back. Shots fly real trajectories, rotate to travel, and draw in the game's
-order: player fire under hostile fire.</p>
+<h2>Demo canvas</h2>
+<p class="note">All deterministic (no RNG; demo patterns, not game data), all
+drawn in the game's order — player fire under hostile fire.
+<b>Live range</b>: emplacements cycle through the hostile families firing
+their patterns at a strafing player marker that fires back.
+<b>Stress field</b>: maximum-density drift of every family at once (Law 5
+budget eyeball). <b>Showcase</b>: one family at a time, named, firing its
+pattern solo.</p>
+<div class="toggles" id="modes">
+<label><input type="radio" name="mode" value="range" checked> live range</label>
+<label><input type="radio" name="mode" value="stress"> stress field</label>
+<label><input type="radio" name="mode" value="showcase"> showcase</label>
+</div>
 <canvas id="stress" width="640" height="360"></canvas>
 </div>
 </div>
@@ -298,15 +306,76 @@ function drawRange(ctx, t) {
     if (s.fam.role === 'hostile')
       drawShot(ctx, s.fam, t - s.born, s.x, s.y, Math.atan2(s.vy, s.vx));
 }
+// ---- Stress field: maximum-density drift of every family at once -------
+function stressField(ctx, t) {
+  ctx.clearRect(0, 0, 640, 360);
+  const hostiles = fams.filter(f => f.role === 'hostile');
+  const players = fams.filter(f => f.role === 'player');
+  for (let i = 0; i < 90; i++) {
+    const fam = players[i % players.length];
+    const a = (i * 2.399963) % (Math.PI * 2);
+    const r = 30 + ((i * 53) % 130) + ((t * 2.2 + i * 17) % 160);
+    drawShot(ctx, fam, t + i * 3,
+             320 + Math.cos(a) * r, 180 + Math.sin(a) * r * 0.56, a);
+  }
+  for (let i = 0; i < 56; i++) {
+    const fam = hostiles[i % hostiles.length];
+    const a = i * 0.7 + t * 0.012;
+    const r = 40 + ((i * 37) % 110) + 34 * Math.sin(t * 0.02 + i);
+    drawShot(ctx, fam, t + i * 5,
+             320 + Math.cos(a) * r, 180 + Math.sin(a) * r * 0.56,
+             a + Math.PI / 2);
+  }
+}
+// ---- Showcase: one hostile family at a time, named, firing solo ---------
+function stepShowcase(t) {
+  const key = hostileKeys[Math.floor(t / 300) % hostileKeys.length];
+  const v = VOLLEYS[key];
+  // showcase fires at double cadence so single-shot families stay on screen
+  if (t % Math.max(35, v.cd >> 1) === 0) fireVolley(key, 150, 180, t);
+  for (let i = shots.length - 1; i >= 0; i--) {
+    const s = shots[i];
+    s.x += s.vx; s.y += s.vy;
+    if (t - s.born > s.ttl || s.x < -40 || s.x > 680 || s.y < -40 || s.y > 400)
+      shots.splice(i, 1);
+  }
+  return key;
+}
+function drawShowcase(ctx, t, key) {
+  ctx.clearRect(0, 0, 640, 360);
+  const fam = byKey[key];
+  ctx.fillStyle = '#12100e';
+  ctx.fillRect(143, 173, 14, 14);
+  ctx.fillStyle = '#4a4238';
+  ctx.fillRect(145, 175, 10, 10);
+  const p = playerPos(t);
+  ctx.beginPath(); ctx.arc(p.x, p.y, 7, 0, 2 * Math.PI);
+  ctx.fillStyle = '#12100e'; ctx.fill();
+  ctx.beginPath(); ctx.arc(p.x, p.y, 5.2, 0, 2 * Math.PI);
+  ctx.fillStyle = '#7c94aa'; ctx.fill();
+  for (const s of shots)
+    drawShot(ctx, s.fam, t - s.born, s.x, s.y, Math.atan2(s.vy, s.vx));
+  ctx.font = 'bold 15px system-ui, sans-serif';
+  ctx.fillStyle = document.getElementById('floorToggle').checked
+    ? '#e8e2d6' : '#12100e';
+  ctx.fillText(key + '  (' + fam.silhouette + ')', 13, 25);
+}
 const stress = document.getElementById('stress').getContext('2d');
-let tick = 0, last = 0;
+let tick = 0, last = 0, lastMode = 'range';
+function currentMode() {
+  const el = document.querySelector('input[name="mode"]:checked');
+  return el ? el.value : 'range';
+}
 function loop(now) {
   if (!pause.checked && now - last >= 1000 / TPS) {
     last = now;
     tick++;
     drawCards(tick);
-    stepRange(tick);
-    drawRange(stress, tick);
+    const mode = currentMode();
+    if (mode !== lastMode) { shots.length = 0; lastMode = mode; }
+    if (mode === 'range') { stepRange(tick); drawRange(stress, tick); }
+    else if (mode === 'stress') { stressField(stress, tick); }
+    else { drawShowcase(stress, tick, stepShowcase(tick)); }
   }
   requestAnimationFrame(loop);
 }
