@@ -32,8 +32,9 @@ _TEMPLATE = """<!doctype html>
 <meta charset="utf-8">
 <title>Projectile Forge — pack preview</title>
 <style>
+  html { overflow-y:auto; }
   body { background:#141618; color:#cfd4d8; font:14px/1.5 system-ui, sans-serif;
-         margin:0; padding:24px; }
+         margin:0; padding:24px; max-width:1200px; }
   h1 { font-size:18px; margin:0 0 4px; } h2 { font-size:15px; margin:24px 0 8px; }
   .note { color:#8a9299; max-width:70em; }
   .controls { margin:12px 0; }
@@ -50,7 +51,9 @@ _TEMPLATE = """<!doctype html>
   canvas { image-rendering:pixelated; background:#101214; border-radius:4px; }
   .row { display:flex; gap:10px; align-items:center; }
   .lbl { font-size:11px; color:#6f7880; }
-  #stress { border:1px solid #2a2e32; }
+  /* Responsive: never wider than the page — wide canvases must not force
+     horizontal overflow or break scrolling in embedded viewers. */
+  #stress { border:1px solid #2a2e32; width:100%; max-width:1152px; height:auto; }
 </style>
 </head>
 <body>
@@ -71,7 +74,7 @@ player spam under hostile fire — hostile must stay legible above all of it.</p
 <h2>Hostile families (one shared signature — §2.6, Law 3)</h2>
 <div class="cards" id="hostileCards"></div>
 <h2>Stress field (Law 2 at density)</h2>
-<canvas id="stress" width="640" height="360" style="width:1280px;height:720px"></canvas>
+<canvas id="stress" width="640" height="360"></canvas>
 </div>
 <script>
 const PACK = __PAYLOAD__;
@@ -144,19 +147,37 @@ function stressField(ctx, tick) {
   }
 }
 
+// requestAnimationFrame + dirty-frame card redraws: the page must stay
+// light enough that scrolling never fights the animation, including in
+// embedded viewers.
 let tick = 0;
+let last = 0;
 Promise.all(ready).then(() => {
   const stress = document.getElementById('stress').getContext('2d');
-  setInterval(() => {
-    if (!pause.checked) tick++;
-    for (const c of cards) {
-      c.authored.clearRect(0, 0, 48, 48);
-      c.ingame.clearRect(0, 0, 48, 48);
-      drawShot(c.authored, c.fam, tick, 24, 24, 0, 1);
-      drawShot(c.ingame, c.fam, tick, 24, 24, 0, c.fam.renderScale);
+  function loop(now) {
+    if (!pause.checked && now - last >= 1000 / TPS) {
+      last = now;
+      tick++;
+      for (const c of cards) {
+        const f = frameOf(c.fam, tick);
+        if (c.lastFrame !== f) {
+          c.lastFrame = f;
+          c.authored.clearRect(0, 0, 48, 48);
+          c.ingame.clearRect(0, 0, 48, 48);
+          drawShot(c.authored, c.fam, tick, 24, 24, 0, 1);
+          drawShot(c.ingame, c.fam, tick, 24, 24, 0, c.fam.renderScale);
+        }
+      }
+      stressField(stress, tick);
     }
-    stressField(stress, tick);
-  }, 1000 / TPS);
+    requestAnimationFrame(loop);
+  }
+  for (const c of cards) {
+    drawShot(c.authored, c.fam, 0, 24, 24, 0, 1);
+    drawShot(c.ingame, c.fam, 0, 24, 24, 0, c.fam.renderScale);
+  }
+  stressField(stress, 0);
+  requestAnimationFrame(loop);
 });
 </script>
 </body>

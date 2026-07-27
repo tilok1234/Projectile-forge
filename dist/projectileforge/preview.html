@@ -4,8 +4,9 @@
 <meta charset="utf-8">
 <title>Projectile Forge — pack preview</title>
 <style>
+  html { overflow-y:auto; }
   body { background:#141618; color:#cfd4d8; font:14px/1.5 system-ui, sans-serif;
-         margin:0; padding:24px; }
+         margin:0; padding:24px; max-width:1200px; }
   h1 { font-size:18px; margin:0 0 4px; } h2 { font-size:15px; margin:24px 0 8px; }
   .note { color:#8a9299; max-width:70em; }
   .controls { margin:12px 0; }
@@ -22,7 +23,9 @@
   canvas { image-rendering:pixelated; background:#101214; border-radius:4px; }
   .row { display:flex; gap:10px; align-items:center; }
   .lbl { font-size:11px; color:#6f7880; }
-  #stress { border:1px solid #2a2e32; }
+  /* Responsive: never wider than the page — wide canvases must not force
+     horizontal overflow or break scrolling in embedded viewers. */
+  #stress { border:1px solid #2a2e32; width:100%; max-width:1152px; height:auto; }
 </style>
 </head>
 <body>
@@ -43,7 +46,7 @@ player spam under hostile fire — hostile must stay legible above all of it.</p
 <h2>Hostile families (one shared signature — §2.6, Law 3)</h2>
 <div class="cards" id="hostileCards"></div>
 <h2>Stress field (Law 2 at density)</h2>
-<canvas id="stress" width="640" height="360" style="width:1280px;height:720px"></canvas>
+<canvas id="stress" width="640" height="360"></canvas>
 </div>
 <script>
 const PACK = {"cell": 32, "families": {"fan_wedge": {"bodyColor": "#965414", "consumers": ["enemy:fanmaw", "elite:yard_warden:p1"], "crossHalfExtentPx": 8.0, "dataUri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAAAgCAYAAADaInAlAAAArklEQVR42u3Z0QnCMBCA4Q7R0ZzN507lAo7gAJWWClVKKNjkAvd9kOf/JIXTOgwAAAAAF5hfj1k/YX8Jf45+kv4+upz7bWw6gH5Q/ze6Py0G0A/ql8ItBtAP6p8J1xxAP6B/tF/WwHNaT+0BDvfb1i7NULMf/fnPnL/7xf3S4AL0y5de/QF0AckfACsg+QrwJUjfzyB9L0L0vQrV7/7PCP1u+l+D6OftAwAAAH15A4l6aatrkwatAAAAAElFTkSuQmCC", "frames": 4, "halfExtentPx": 11.106601717798213, "hitboxRadiusPx": 6.4, "hitboxRadiusTiles": 0.2, "image": "fan_wedge.png", "inscribedRadiusPx": 3.5, "rateTicks": 10, "renderScale": 1.8286, "role": "hostile", "silhouette": "wedge"}, "husk_dart": {"bodyColor": "#8C2C1A", "consumers": ["enemy:husk_archer"], "crossHalfExtentPx": 8.0, "dataUri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAAAgCAYAAADaInAlAAAArUlEQVR42u3Z2w2DIABAUeboDB3VITpVF+gIDoDR9KPxFVGRVM5J+L7YElEMAQAAAGAktu+oX1m/jy4N/Rv3f0PN8zEZuSeiX7C/Fr5iIvpl+2FrfG4i+n/eT1l9OVajftl+8gTi5zWMsyaSdPv7tsdzuKpf+vqzLIQ9F7/2I+jnvf3PtQ9tCf4AC8AWUPsW4CGs4odAr2H6DmJqPwhyFKvvY4i+z6H6AAAAwN10hw10GYDotvsAAAAASUVORK5CYII=", "frames": 4, "halfExtentPx": 13.247548783981962, "hitboxRadiusPx": 5.76, "hitboxRadiusTiles": 0.18, "image": "husk_dart.png", "inscribedRadiusPx": 4.0, "rateTicks": 10, "renderScale": 1.44, "role": "hostile", "silhouette": "teardrop"}, "lead_needle": {"bodyColor": "#7A1E7A", "consumers": ["enemy:leadshot"], "crossHalfExtentPx": 3.0, "dataUri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAARklEQVR42mNgGAWjYBSMglEwCoYq+P/52n9kTFfLiMVUt7BKrgoF/3+8AIwxxCl10IA7YMCjYNAlwlEwCkbBKBgFo4CWAABhhRHI2cfbIwAAAABJRU5ErkJggg==", "frames": 1, "halfExtentPx": 11.01189802081432, "hitboxRadiusPx": 5.76, "hitboxRadiusTiles": 0.18, "image": "lead_needle.png", "inscribedRadiusPx": 2.75, "rateTicks": 10, "renderScale": 2.0945, "role": "hostile", "silhouette": "needle"}, "longbolt": {"bodyColor": "#6E87A0", "consumers": ["weapon:longbolt"], "crossHalfExtentPx": 3.0, "dataUri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAQElEQVR42mNgGAWjYBSMglEwCgYrsPNP+E9NPGAWk+QQmKK89gU0wQQdMeAOGPAoGBSJcBSMglEwCkbBKKA3AAAklioAQkXTwgAAAABJRU5ErkJggg==", "frames": 1, "halfExtentPx": 13.009996003196804, "hitboxRadiusPx": 4.8, "hitboxRadiusTiles": 0.15, "image": "longbolt.png", "inscribedRadiusPx": 3.0, "rateTicks": 10, "renderScale": 1.0, "role": "player", "silhouette": "bolt"}, "ring_roundel": {"bodyColor": "#941A2C", "consumers": ["enemy:ringer", "elite:yard_warden:p2"], "crossHalfExtentPx": 9.0, "dataUri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAAAgCAYAAADaInAlAAAA1klEQVR42u3azQ3CMAxA4czBDCzIHgzQqbj0yAgMUE6gpnKDkJpGbb4n+fzs2Kry05QAAAAAAFhnej2mUvCf2D8X3S/XLPZIgr+RPxKPwy2Lmonwt/WnkriUCP8J/PPJi0RRYvNJ5D+wvySfnkMWNZJY8y/dn9jL37r+ZfOrDUGUQFR8tAi1FmDNvRyCWv7W9X8/8YF7a3/6p/jSIvBv5/81gFv6NcAAaIAB0IC+B8AmsPNNoGNgx8dAFzH8rkL5PYZ0/xjkOZY/TMIPGf35AQAAAACH5g3TE4nl6cBnlAAAAABJRU5ErkJggg==", "frames": 4, "halfExtentPx": 9.692388155425117, "hitboxRadiusPx": 6.4, "hitboxRadiusTiles": 0.2, "image": "ring_roundel.png", "inscribedRadiusPx": 8.5, "rateTicks": 10, "renderScale": 0.7529, "role": "hostile", "silhouette": "roundel"}, "scattercast": {"bodyColor": "#7C94AA", "consumers": ["weapon:scattercast"], "crossHalfExtentPx": 5.0, "dataUri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAATUlEQVR42mNgGAWjYBSMglEwlIGdf8J/EB4wi9ExXS2vmbIKBdPNEdgsR3bEgPiebqEw4A4Y8CgYFIlwwLPhoCiIRsEoGAWjYBRQEwAAWxycUdb2H30AAAAASUVORK5CYII=", "frames": 1, "halfExtentPx": 5.027692569068709, "hitboxRadiusPx": 3.84, "hitboxRadiusTiles": 0.12, "image": "scattercast.png", "inscribedRadiusPx": 4.0, "rateTicks": 10, "renderScale": 0.768, "role": "player", "silhouette": "pellet"}, "warden_star": {"bodyColor": "#602880", "consumers": ["elite:yard_warden:p3"], "crossHalfExtentPx": 11.0, "dataUri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAAAgCAYAAABEmHeFAAAB50lEQVR42u1b223DMBDzOB0ro3SUTJUFMkIHSJAiBhxF8qmojqRiEtBXkVL34On08LIYhmEYhmEYhmEYhhHj9nO5PQaD19436DlxJAFYdI6PlADQvCxb3RWIxmYlRZMr8M4QXOZcj5AP9EQ8fX1TA4zi/ivnDHMczb3mAlwAD2J0IpYCQHNvbY64RyVFaW/t/23/NiImvXPfch4mF2pGo6sNi3vlLbnLKjiyIrZsLsdon0Q2lbxIATDz4C0RmIbvJcToOfVwZwWk5fPsWETiaxWErPYKyb1Ey2wrEdACiESQVYn3BkJ8Ld4M7l6bs1eeKP7pG5wX0uv5d+wlYuqyV+FHJkOLPysYvf6HFZ2CHy36Gv+QOXQp7kkeJcHIjWAt+SIRpm26GvyZq2DEj+JG8kfFN8X/SgKgOEAoAVQEwC4AtALIbIFoS6BIC6DSAim1gNQWGLUJltoEETaBaptghUMAhUMQyjEo+xiMfQzIPgZVOQZWOAbXuIQAzkHlIoh1ERa2YKCLQLXce+8FSa8kM6/ClZ4CMJ5C9MQc9RQEFfN/VceFBAVnICqewmM4hZgzH0PKCkBhHtkVD/U7pG2zx1vmIxGlj1U+9cMZ+3gCpyglyycKwHOxAAzH2jAMwzAMwzAMwzDmxB0BbJuq8px+VAAAAABJRU5ErkJggg==", "frames": 6, "halfExtentPx": 11.477249200050075, "hitboxRadiusPx": 6.4, "hitboxRadiusTiles": 0.2, "image": "warden_star.png", "inscribedRadiusPx": 4.0, "rateTicks": 10, "renderScale": 1.6, "role": "hostile", "silhouette": "star4"}, "wheelblade": {"bodyColor": "#8AA0B4", "consumers": ["weapon:wheelblade"], "crossHalfExtentPx": 9.0, "dataUri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAAAgCAYAAADaInAlAAAA80lEQVR42u2Y2w2CQBBFqcwWbIF6rMIi7E/DB4nZ6CoE7r0w5yT7xccMM2efwwAAAAAAAAAA/3C5js9pUImiDTl7vEM2v4IASNApjKo4VWKusk6Z5Bzndn/IZ+MU0xVXJkFr3dKhan41ASwSzIHfg/e+KaRs4ypXRXkjGgHaPsgl+DT2SqYnnLsJTvm+TUiLBFsH/9V0hwBuAZfUYpeclAVIE0A9ASIFcC2B7i3AvQVGbAEJhyDHITDpEGw7BKZcg9TXwLRrsHPixQmgeAhKewiTPwRFPUseIJdS/5lU8GoCRCWUVqCzC0BCAAAAAAAAALCGFzioYjbg2yMEAAAAAElFTkSuQmCC", "frames": 4, "halfExtentPx": 9.24642784226795, "hitboxRadiusPx": 6.4, "hitboxRadiusTiles": 0.2, "image": "wheelblade.png", "inscribedRadiusPx": 3.0, "rateTicks": 8, "renderScale": 0.7111, "role": "player", "silhouette": "tri-blade"}}, "tps": 60};
@@ -116,19 +119,37 @@ function stressField(ctx, tick) {
   }
 }
 
+// requestAnimationFrame + dirty-frame card redraws: the page must stay
+// light enough that scrolling never fights the animation, including in
+// embedded viewers.
 let tick = 0;
+let last = 0;
 Promise.all(ready).then(() => {
   const stress = document.getElementById('stress').getContext('2d');
-  setInterval(() => {
-    if (!pause.checked) tick++;
-    for (const c of cards) {
-      c.authored.clearRect(0, 0, 48, 48);
-      c.ingame.clearRect(0, 0, 48, 48);
-      drawShot(c.authored, c.fam, tick, 24, 24, 0, 1);
-      drawShot(c.ingame, c.fam, tick, 24, 24, 0, c.fam.renderScale);
+  function loop(now) {
+    if (!pause.checked && now - last >= 1000 / TPS) {
+      last = now;
+      tick++;
+      for (const c of cards) {
+        const f = frameOf(c.fam, tick);
+        if (c.lastFrame !== f) {
+          c.lastFrame = f;
+          c.authored.clearRect(0, 0, 48, 48);
+          c.ingame.clearRect(0, 0, 48, 48);
+          drawShot(c.authored, c.fam, tick, 24, 24, 0, 1);
+          drawShot(c.ingame, c.fam, tick, 24, 24, 0, c.fam.renderScale);
+        }
+      }
+      stressField(stress, tick);
     }
-    stressField(stress, tick);
-  }, 1000 / TPS);
+    requestAnimationFrame(loop);
+  }
+  for (const c of cards) {
+    drawShot(c.authored, c.fam, 0, 24, 24, 0, 1);
+    drawShot(c.ingame, c.fam, 0, 24, 24, 0, c.fam.renderScale);
+  }
+  stressField(stress, 0);
+  requestAnimationFrame(loop);
 });
 </script>
 </body>
