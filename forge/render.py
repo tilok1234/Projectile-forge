@@ -97,13 +97,12 @@ def _measure_authored(fam: Family) -> tuple:
 
 def bake_scale_for(fam: Family) -> tuple:
     """(scale, metrics) — the authored->screen factor per the render rules.
-    Hostile gets a +1.2px pad: the raster inscribed measure is conservative
-    (a transparent pixel's whole square must clear the circle, and coverage
-    thresholding shaves the boundary), so the pad keeps the baked inscribed
-    circle at-or-above the hitbox."""
+    Hostile gets a +0.5px pad against raster quantization of the
+    half-coverage contour — enough to keep the baked inscribed circle
+    at-or-above the hitbox without inflating the sprite."""
     inscribed, cross, half = _measure_authored(fam)
     if fam.role == "hostile":
-        scale = (fam.hitbox_radius_px + 1.2) / inscribed
+        scale = (fam.hitbox_radius_px + 0.5) / inscribed
     else:
         scale = min(1.0, fam.hitbox_radius_px / cross)
     return scale, (inscribed, cross, half)
@@ -176,15 +175,23 @@ def _mix(a: tuple, b: tuple, t: float) -> tuple:
 
 def _hostile_pixel(fam: Family, d: float, px: float, py: float, core_r: float) -> tuple:
     r = math.hypot(px, py)
-    col = fam.body_rgb
+    body = fam.body_rgb
+    # soft energy glow: the body warms toward the core, so shapes read as
+    # lit from within instead of flat-filled
+    glow_span = max(fam.hitbox_radius_px * 1.6 - core_r, 1.0)
+    col = _mix(body, CORE_RGB, 0.30 * _clamp01(1.0 - (r - core_r) / glow_span))
     if fam.pattern == "rings":
         # Painted INSIDE a solid silhouette, never cut out of it (Law 8).
         hb = fam.hitbox_radius_px
-        mid = _mix(fam.body_rgb, CORE_RGB, 2.0 / 3.0)
+        mid = _mix(body, CORE_RGB, 2.0 / 3.0)
         band = _clamp01((r - 0.58 * hb) / _BLEND) * _clamp01((0.82 * hb - r) / _BLEND)
         col = _mix(col, mid, band)
     # hard bright core with a soft shoulder
     col = _mix(col, CORE_RGB, _clamp01((core_r - r) / _BLEND + 1.0))
+    # thin dark ink line just inside the rim: definition against dark floors
+    dark = (body[0] * 2 // 5, body[1] * 2 // 5, body[2] * 2 // 5)
+    ink = _clamp01((d + 3.1) / 0.7) * _clamp01(-(d + 1.6) / 0.7)
+    col = _mix(col, dark, ink)
     # the signature rim on top: full strength at the boundary, soft inner side
     col = _mix(col, RIM_RGB, _clamp01((d + _RIM_BAND) / _BLEND + 1.0))
     return col
@@ -195,31 +202,18 @@ def _player_pixel(fam: Family, d: float) -> tuple:
 
 
 def _inscribed_radius(masks: list, cell: int) -> float:
-    """Largest centered circle fully opaque in every frame (0.25px steps)."""
+    """Largest centered circle whose every covered pixel CENTER is opaque at
+    the half-coverage contour, minimized over frames. Pixel-center sampling
+    matches how the AA sheets actually read on screen — the fringe outside
+    the contour still carries ink."""
     c = cell / 2.0
-    best = 0.0
-    r = 0.25
-    while r <= c:
-        ok = True
-        for mask in masks:
-            for yy in range(cell):
-                for xx in range(cell):
-                    if mask[yy * cell + xx]:
-                        continue
-                    nx = max(abs(xx + 0.5 - c) - 0.5, 0.0)
-                    ny = max(abs(yy + 0.5 - c) - 0.5, 0.0)
-                    if math.hypot(nx, ny) < r:
-                        ok = False
-                        break
-                if not ok:
-                    break
-            if not ok:
-                break
-        if not ok:
-            break
-        best = r
-        r += 0.25
-    return best
+    best = 1e9
+    for mask in masks:
+        for yy in range(cell):
+            for xx in range(cell):
+                if not mask[yy * cell + xx]:
+                    best = min(best, math.hypot(xx + 0.5 - c, yy + 0.5 - c))
+    return max(0.0, math.floor((best - 0.01) / 0.25) * 0.25)
 
 
 def _cross_half_extent(masks: list, cell: int) -> float:

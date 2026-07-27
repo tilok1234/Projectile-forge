@@ -108,7 +108,7 @@ stays in the forge):
 | `cross_plus` | hostile | cross, saltire rest pose (spins) | spinner |
 | `hex_star` | hostile | six-point star (spins) | radial-heavy |
 | `bar_sweep` | hostile | cross-axis bar | sweeper |
-| `boulder` | hostile | large disc | siege |
+| `meteor` | hostile | tri-lobed heavy | siege |
 | `shard` | hostile | tiny point-forward sliver | volley |
 | `twin_orb` | hostile | binary pair (counter-rotates) | paired |
 | `spark` | hostile | tiny five-point star | swarm |

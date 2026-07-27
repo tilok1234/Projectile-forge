@@ -99,10 +99,16 @@ def _husk_dart(x, y, _p):
     return shapes.sd_teardrop_x(x, y, -5.5, 7.5, 6.0, 1.5)
 
 def _lead_needle(x, y, _p):
-    return shapes.sd_rhombus_x(x, y, 13.0, 3.0)
+    return shapes.sd_rhombus_x(x, y, 13.0, 3.5)
 
 def _fan_wedge(x, y, _p):
-    return shapes.sd_triangle_isosceles_back(x, y, -10.0, 8.0, 8.0)
+    # Swallowtail: a shallow notch in the blunt leading face. Distinctive in
+    # its own right, and it removes silhouette area exactly where the
+    # boulder disc and the needle overlap the wedge (both pairs sat at the
+    # 0.55 IoU limit with a plain triangle).
+    body = shapes.sd_triangle_isosceles_back(x, y, -11.0, 8.0, 7.85)
+    notch = shapes.sd_triangle_isosceles_back(x, y, 3.8, 8.6, 2.9)
+    return shapes.sd_subtract(body, notch)
 
 def _ring_roundel(x, y, _p):
     return shapes.sd_roundel(x, y, 9.2)
@@ -113,7 +119,7 @@ def _warden_star(x, y, p):
     # the needle/cross axes.
     rot = p * (math.pi / 2.0) + math.pi / 8.0
     c, s = math.cos(rot), math.sin(rot)
-    return shapes.sd_star4(x * c - y * s, x * s + y * c, 12.0, 3.2)
+    return shapes.sd_star4(x * c - y * s, x * s + y * c, 10.5, 3.2)
 
 # --- extended hostile (one lane per role-grammar pressure) ------------------
 
@@ -121,29 +127,33 @@ def _comet(x, y, _p):
     # Small round head leading, long thin tail trailing — the fast
     # predictive shot reads direction instantly, and the slim profile keeps
     # it out of the wedge/dart mass lanes.
-    return shapes.sd_teardrop_x(-x, y, -4.5, 5.5, 11.5, 1.0)
+    return shapes.sd_teardrop_x(-x, y, -4.5, 5.2, 10.0, 1.0)
 
 def _crescent(x, y, _p):
-    return shapes.sd_crescent_x(x, y, 10.0, 11.0, 7.0)
+    return shapes.sd_crescent_x(x, y, 9.0, 10.0, 6.3)
 
 def _cross_plus(x, y, p):
     # Rest pose is the saltire (45 deg): arms diagonal, unmistakable next to
     # the axial star4 points at every phase.
     rot = p * (math.pi / 2.0) + math.pi / 4.0
-    return shapes.sd_cross(x, y, 10.0, 4.2, rot)
+    return shapes.sd_cross(x, y, 9.5, 3.5, rot)
 
 def _hex_star(x, y, p):
     rot = p * (math.pi / 3.0)
     c, s = math.cos(rot), math.sin(rot)
     # Sharp points (m close to n): long spikes, small body — nothing like
     # the boulder/roundel disc lane.
-    return shapes.sd_star(x * c - y * s, x * s + y * c, 11.5, 6.0, 4.2)
+    return shapes.sd_star(x * c - y * s, x * s + y * c, 10.0, 6.0, 4.2)
 
 def _bar_sweep(x, y, _p):
-    return shapes.sd_capsule_y(x, y, 9.0, 3.2)
+    return shapes.sd_capsule_y(x, y, 7.5, 3.2)
 
-def _boulder(x, y, _p):
-    return shapes.sd_circle(x, y, 11.0)
+def _meteor(x, y, _p):
+    # Tri-lobed heavy rock. A plain disc was the aggressor in most measured
+    # pairs (any convex blob CONTAINS the mid-size shapes and their IoU
+    # saturates); the three fat lobes keep the siege identity and break the
+    # containment.
+    return shapes.sd_star(x, y, 11.0, 3.0, 2.2)
 
 def _shard(x, y, _p):
     return shapes.sd_triangle_point_forward(x, y, 7.5, -5.5, 1.8)
@@ -194,54 +204,54 @@ FAMILIES: tuple = (
     # ---- core hostile ------------------------------------------------------
     Family(key="husk_dart", role="hostile", tier="core", silhouette="teardrop",
            consumers=("enemy:husk_archer",), hitbox_radius_tiles=0.18,
-           body_rgb=(140, 44, 26), pulse_px=0.4, sdf=_husk_dart),
+           body_rgb=(170, 50, 22), pulse_px=0.4, sdf=_husk_dart),
     Family(key="lead_needle", role="hostile", tier="core", silhouette="needle",
            consumers=("enemy:leadshot",), hitbox_radius_tiles=0.18,
-           body_rgb=(122, 30, 122), frames=1, sdf=_lead_needle),
+           body_rgb=(148, 30, 150), frames=1, sdf=_lead_needle),
     Family(key="fan_wedge", role="hostile", tier="core", silhouette="wedge",
            consumers=("enemy:fanmaw", "elite:yard_warden:p1"),
-           hitbox_radius_tiles=0.20, body_rgb=(150, 84, 20), pulse_px=0.4,
+           hitbox_radius_tiles=0.20, body_rgb=(184, 100, 16), pulse_px=0.4,
            sdf=_fan_wedge),
     Family(key="ring_roundel", role="hostile", tier="core", silhouette="roundel",
            consumers=("enemy:ringer", "elite:yard_warden:p2"),
-           hitbox_radius_tiles=0.20, body_rgb=(148, 26, 44), pulse_px=0.4,
+           hitbox_radius_tiles=0.20, body_rgb=(174, 24, 48), pulse_px=0.4,
            pattern="rings", sdf=_ring_roundel),
     Family(key="warden_star", role="hostile", tier="core", silhouette="star4",
            consumers=("elite:yard_warden:p3",), hitbox_radius_tiles=0.20,
            # 8 frames / 11.25-degree steps: sharp points alias more per step,
            # so the slower rotation keeps luminance deltas under the cap.
-           body_rgb=(96, 40, 128), frames=8, spin_symmetry=4, sdf=_warden_star),
+           body_rgb=(118, 46, 160), frames=8, spin_symmetry=4, sdf=_warden_star),
     # ---- extended hostile --------------------------------------------------
     Family(key="comet", role="hostile", tier="extended", silhouette="comet",
-           consumers=("grammar:predictive-fast",), hitbox_radius_tiles=0.12,
-           body_rgb=(168, 70, 18), pulse_px=0.4, sdf=_comet),
+           consumers=("grammar:predictive-fast",), hitbox_radius_tiles=0.11,
+           body_rgb=(200, 88, 14), pulse_px=0.4, sdf=_comet),
     Family(key="crescent", role="hostile", tier="extended", silhouette="crescent",
-           consumers=("grammar:wave",), hitbox_radius_tiles=0.22,
-           body_rgb=(140, 20, 90), pulse_px=0.4, sdf=_crescent),
+           consumers=("grammar:wave",), hitbox_radius_tiles=0.15,
+           body_rgb=(172, 20, 110), pulse_px=0.4, sdf=_crescent),
     Family(key="cross_plus", role="hostile", tier="extended", silhouette="cross",
-           consumers=("grammar:spinner",), hitbox_radius_tiles=0.20,
-           body_rgb=(120, 36, 36), frames=12, rate_ticks=8, spin_symmetry=4,
+           consumers=("grammar:spinner",), hitbox_radius_tiles=0.24,
+           body_rgb=(148, 42, 42), frames=12, rate_ticks=8, spin_symmetry=4,
            sdf=_cross_plus),
     Family(key="hex_star", role="hostile", tier="extended", silhouette="star6",
-           consumers=("grammar:radial-heavy",), hitbox_radius_tiles=0.24,
-           body_rgb=(160, 52, 24), frames=8, rate_ticks=10, spin_symmetry=6,
+           consumers=("grammar:radial-heavy",), hitbox_radius_tiles=0.22,
+           body_rgb=(190, 62, 20), frames=8, rate_ticks=10, spin_symmetry=6,
            sdf=_hex_star),
     Family(key="bar_sweep", role="hostile", tier="extended", silhouette="bar",
            consumers=("grammar:sweeper",), hitbox_radius_tiles=0.20,
-           body_rgb=(110, 22, 52), pulse_px=0.4, sdf=_bar_sweep),
-    Family(key="boulder", role="hostile", tier="extended", silhouette="boulder",
-           consumers=("grammar:siege",), hitbox_radius_tiles=0.30,
-           body_rgb=(108, 66, 30), pulse_px=0.4, sdf=_boulder),
+           body_rgb=(136, 20, 62), pulse_px=0.4, sdf=_bar_sweep),
+    Family(key="meteor", role="hostile", tier="extended", silhouette="meteor",
+           consumers=("grammar:siege",), hitbox_radius_tiles=0.28,
+           body_rgb=(130, 80, 34), pulse_px=0.4, sdf=_meteor),
     Family(key="shard", role="hostile", tier="extended", silhouette="shard",
            consumers=("grammar:volley",), hitbox_radius_tiles=0.08,
-           body_rgb=(170, 30, 30), frames=1, sdf=_shard),
+           body_rgb=(200, 38, 30), frames=1, sdf=_shard),
     Family(key="twin_orb", role="hostile", tier="extended", silhouette="twin",
            consumers=("grammar:paired",), hitbox_radius_tiles=0.18,
-           body_rgb=(118, 32, 96), frames=8, rate_ticks=12, spin_symmetry=2,
+           body_rgb=(144, 38, 118), frames=8, rate_ticks=12, spin_symmetry=2,
            sdf=_twin_orb),
     Family(key="spark", role="hostile", tier="extended", silhouette="spark",
            consumers=("grammar:swarm",), hitbox_radius_tiles=0.10,
-           body_rgb=(150, 40, 20), frames=1, sdf=_spark),
+           body_rgb=(184, 50, 18), frames=1, sdf=_spark),
     # ---- extended player ---------------------------------------------------
     Family(key="lance", role="player", tier="extended", silhouette="lance",
            consumers=("reserved:frame-candidate",), hitbox_radius_tiles=0.15,

@@ -95,11 +95,11 @@ class PackTests(unittest.TestCase):
         self.assertFalse(self._row(report, "photosensitivity")["pass"])
 
     def test_canary_interior_partial_alpha_fails(self):
-        # Half-transparent pixel at the CENTER of a big solid family: AA is
+        # Half-transparent pixel at the CENTER of a big solid family (meteor): AA is
         # legal only hugging the outer boundary, so this must fail.
         manifest = copy.deepcopy(self.manifest)
         sheets = _sheets_no_png(self.sheets)
-        fam = manifest["families"]["boulder"]
+        fam = manifest["families"]["meteor"]
         w, h, px = sheets[fam["image"]]
         px = bytearray(px)
         cell = fam["cellPx"]
